@@ -1,0 +1,39 @@
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
+import { tagSchema } from "@/lib/validations";
+import { canPublish } from "@/lib/rbac";
+
+export async function GET() {
+  const tags = await db.tag.findMany({
+    orderBy: { name: "asc" },
+    include: { _count: { select: { articles: true } } },
+  });
+  return NextResponse.json({ tags });
+}
+
+export async function POST(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user || !canPublish(user.role)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  try {
+    const body = await req.json();
+    const result = tagSchema.safeParse(body);
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error.errors[0]?.message || "Invalid" }, { status: 400 });
+    }
+
+    const { name, slug, description } = result.data;
+    const tag = await db.tag.create({
+      data: { name, slug, description },
+    });
+
+    return NextResponse.json({ success: true, tag });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message || "Failed" }, { status: 500 });
+  }
+}
+

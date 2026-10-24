@@ -1,0 +1,367 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  EDITOR
+  AUTHOR
+}
+
+enum ArticleStatus {
+  DRAFT
+  PENDING_REVIEW
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         Role          @default(AUTHOR)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  authorProfile AuthorProfile?
+  revisions     ArticleRevision[]
+  mediaAssets   MediaAsset[]
+  auditLogs     AuditLog[]
+  reviewedIngested IngestedItem[]
+
+  @@map("users")
+}
+
+model AuthorProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName     String
+  slug            String    @unique
+  title           String?   // e.g. "Jurnalis Investigasi", "Editor Politik"
+  bio             String?   @db.Text
+  avatar          String?
+  socialTwitter   String?
+  socialLinkedin  String?
+  socialInstagram String?
+  isPublic        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  articles        Article[]
+
+  @@map("author_profiles")
+}
+
+model Category {
+  id              String    @id @default(cuid())
+  name            String
+  slug            String    @unique
+  description     String?   @db.Text
+  sortOrder       Int       @default(0)
+  isActive        Boolean   @default(true)
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  articles        Article[]
+
+  @@index([slug])
+  @@index([sortOrder])
+  @@map("categories")
+}
+
+model Tag {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  articles    ArticleTag[]
+
+  @@index([slug])
+  @@map("tags")
+}
+
+model Article {
+  id              String        @id @default(cuid())
+  title           String
+  slug            String        @unique
+  summary         String        @db.Text
+  content         String        @db.Text
+  featuredImage   String?
+  imageAlt        String?
+  imageCaption    String?
+  imageCredit     String?
+  readingTime     Int           @default(3) // In minutes
+  status          ArticleStatus @default(DRAFT)
+  publishedAt     DateTime?
+  scheduledFor    DateTime?
+  
+  categoryId      String
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  
+  authorId        String
+  author          AuthorProfile @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  
+  isBreaking      Boolean       @default(false)
+  isFeatured      Boolean       @default(false)
+  isEditorPick    Boolean       @default(false)
+  viewCount       Int           @default(0)
+  
+  // SEO fields
+  metaTitle       String?
+  metaDescription String?
+  canonicalUrl    String?
+  noIndex         Boolean       @default(false)
+  
+  // Editorial trust & integrity
+  factCheckNotes  String?       @db.Text
+  correctionNotes String?       @db.Text
+  sourceReferences String?      @db.Text // JSON or structured plain text
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  tags            ArticleTag[]
+  revisions       ArticleRevision[]
+  comments        Comment[]
+
+  @@index([slug])
+  @@index([status, publishedAt])
+  @@index([categoryId, status, publishedAt])
+  @@index([authorId, status, publishedAt])
+  @@index([isBreaking])
+  @@index([isFeatured])
+  @@index([isEditorPick])
+  @@index([viewCount])
+  @@map("articles")
+}
+
+model ArticleTag {
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tagId     String
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@index([tagId])
+  @@map("article_tags")
+}
+
+model ArticleRevision {
+  id           String   @id @default(cuid())
+  articleId    String
+  article      Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  title        String
+  summary      String   @db.Text
+  content      String   @db.Text
+  revisionNote String?
+  createdById  String
+  createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@index([articleId])
+  @@map("article_revisions")
+}
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  fileName     String
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  url          String
+  altText      String?
+  caption      String?
+  credit       String?
+  width        Int?
+  height       Int?
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+
+  @@map("media_assets")
+}
+
+model Redirect {
+  id              String   @id @default(cuid())
+  sourcePath      String   @unique
+  destinationPath String
+  statusCode      Int      @default(301)
+  isActive        Boolean  @default(true)
+  hitCount        Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([sourcePath])
+  @@map("redirects")
+}
+
+model SiteSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+model IngestionSource {
+  id                String          @id @default(cuid())
+  name              String
+  websiteUrl        String?
+  type              String          @default("RSS") // RSS, LICENSED_API, PRESS_RELEASE, GOV_SOURCE
+  url               String          // Feed URL or API endpoint
+  authType          String          @default("NONE") // NONE, API_KEY, BEARER, BASIC
+  authSecretEnvKey  String?         // Reference to env variable name
+  isActive          Boolean         @default(true)
+  pollingInterval   Int             @default(30) // in minutes
+  allowedCategories String?         // comma-separated category slugs
+  licenseNotes      String?         @db.Text
+  lastFetchedAt     DateTime?
+  lastError         String?         @db.Text
+  itemCount         Int             @default(0)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  items             IngestedItem[]
+
+  @@map("ingestion_sources")
+}
+
+model IngestedItem {
+  id                       String          @id @default(cuid())
+  sourceId                 String
+  source                   IngestionSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  originalUrl              String          @unique
+  canonicalUrl             String?
+  title                    String
+  originalPublishedAt      DateTime?
+  discoveredAt             DateTime        @default(now())
+  rawContent               String?         @db.Text
+  excerpt                  String?         @db.Text
+  author                   String?
+  detectedCategory         String?
+  
+  // Editorial status: DISCOVERED, DUPLICATE, RESEARCH_NEEDED, READY_FOR_AI_DRAFT, DRAFT_GENERATED, AWAITING_EDITORIAL_REVIEW, APPROVED, SCHEDULED, PUBLISHED, REJECTED, FAILED
+  status                   String          @default("DISCOVERED")
+  
+  // Duplicate detection metadata
+  duplicateOfId            String?
+  duplicateScore           Float?
+  duplicateReason          String?
+  editorialNotes           String?         @db.Text
+
+  // AI-Assisted Draft Payload
+  aiDraftTitle             String?
+  aiDraftAlternativeTitles String?         @db.Text // JSON string array
+  aiDraftSummary           String?         @db.Text
+  aiDraftContent           String?         @db.Text
+  aiDraftOutline           String?         @db.Text
+  aiRecommendedCategory    String?
+  aiRecommendedTags        String?         @db.Text // JSON string array
+  aiMetaTitle              String?
+  aiMetaDescription        String?
+  aiSuggestedInternalLinks String?         @db.Text // JSON
+  aiVerificationClaims     String?         @db.Text // JSON
+  aiQualityAudit           String?         @db.Text // JSON
+  isHighImpact             Boolean         @default(false) // Health, finance, legal, emergency
+
+  // Review & Workflow Metadata
+  reviewedById             String?
+  reviewedBy               User?           @relation(fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt               DateTime?
+  draftedArticleId         String?
+
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+
+  @@index([sourceId])
+  @@index([status])
+  @@index([discoveredAt])
+  @@index([isHighImpact])
+  @@map("ingested_items")
+}
+
+model NewsletterSubscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  isActive       Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([email])
+  @@map("newsletter_subscribers")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String   // e.g. "ARTICLE_PUBLISHED", "USER_CREATED", "SETTINGS_UPDATED"
+  entityType String   // "Article", "User", "Category", "SiteSetting"
+  entityId   String?
+  details    String?  @db.Text
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  SPAM
+  TRASH
+}
+
+model Comment {
+  id          String        @id @default(cuid())
+  articleId   String
+  article     Article       @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  authorName  String
+  authorEmail String
+  content     String        @db.Text
+  status      CommentStatus @default(PENDING)
+  ipAddress   String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([articleId])
+  @@index([status])
+  @@map("comments")
+}
+
+model NavigationMenu {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  target    String   @default("_self") // _self, _blank
+  position  String   @default("HEADER") // HEADER, FOOTER, SECONDARY
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([position, sortOrder])
+  @@map("navigation_menus")
+}
+
+

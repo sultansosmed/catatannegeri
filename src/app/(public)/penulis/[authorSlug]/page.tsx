@@ -167,7 +167,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
 
           {author.articles.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {author.articles.map((art) => (
+              {author.articles.map((art: any) => (
                 <ArticleCard key={art.id} article={art} variant="standard" />
               ))}
             </div>

@@ -131,7 +131,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <div className="lg:col-span-8">
           {articles.length > 0 ? (
             <div className="space-y-4">
-              {articles.map((art) => (
+              {articles.map((art: any) => (
                 <ArticleCard key={art.id} article={art} variant="horizontal" />
               ))}
             </div>

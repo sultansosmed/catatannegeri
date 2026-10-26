@@ -80,7 +80,7 @@ export default async function TentangKamiPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {authors.map((auth) => (
+          {authors.map((auth: any) => (
             <div key={auth.id} className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col items-center text-center shadow-sm">
               <div className="relative w-20 h-20 rounded-full overflow-hidden bg-slate-100 mb-3 border-2 border-slate-200">
                 <Image

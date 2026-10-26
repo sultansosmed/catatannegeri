@@ -245,7 +245,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     article.content.matchAll(/<p><strong>(\d+\.\s*[^?]+(?:\?|:))<\/strong><br\s*\/?>([\s\S]*?)<\/p>/gi)
   );
   const faqs = faqMatches
-    .map((m) => ({
+    .map((m: any) => ({
       question: m[1].replace(/^\d+\.\s*/, "").trim(),
       answer: m[2].replace(/<[^>]*>/g, " ").trim(),
     }))
@@ -435,7 +435,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   <BookmarkCheck className="w-3.5 h-3.5 text-slate-400" />
                   Topik Terkait:
                 </span>
-                {article.tags.map(({ tag }) => (
+                {article.tags.map(({ tag }: any) => (
                   <Link
                     key={tag.id}
                     href={`/search?q=${encodeURIComponent(tag.name)}`}
@@ -537,7 +537,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {relatedArticles.map((art) => (
+                  {relatedArticles.map((art: any) => (
                     <ArticleCard key={art.id} article={art} variant="standard" />
                   ))}
                 </div>

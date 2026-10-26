@@ -1,3 +1,4 @@
+export const dynamic = "force-static";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser, hashPassword } from "@/lib/auth";
@@ -74,3 +75,7 @@ export async function DELETE(
   }
 }
 
+
+export async function generateStaticParams() {
+  return [];
+}

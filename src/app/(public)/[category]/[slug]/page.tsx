@@ -31,6 +31,17 @@ interface ArticlePageProps {
   params: Promise<{ category: string; slug: string }>;
 }
 
+export async function generateStaticParams() {
+  const articles = await db.article.findMany({
+    where: { status: "PUBLISHED" },
+    include: { category: true },
+  });
+  return articles.map((a: any) => ({
+    category: a.category?.slug || "berita",
+    slug: a.slug,
+  }));
+}
+
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { category: categorySlug, slug } = await params;
 

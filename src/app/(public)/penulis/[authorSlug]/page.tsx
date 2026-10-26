@@ -12,6 +12,11 @@ interface AuthorPageProps {
   params: Promise<{ authorSlug: string }>;
 }
 
+export async function generateStaticParams() {
+  const authors = await db.authorProfile.findMany();
+  return authors.map((a: any) => ({ authorSlug: a.slug }));
+}
+
 export async function generateMetadata({ params }: AuthorPageProps): Promise<Metadata> {
   const { authorSlug } = await params;
 

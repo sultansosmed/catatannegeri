@@ -12,6 +12,10 @@ interface NewsInboxDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+export async function generateStaticParams() {
+  return [];
+}
+
 export default async function AdminNewsInboxDetailPage({ params }: NewsInboxDetailPageProps) {
   const user = await getCurrentUser();
   if (!user) {

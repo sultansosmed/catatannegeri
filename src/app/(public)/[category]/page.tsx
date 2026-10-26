@@ -14,6 +14,11 @@ interface CategoryPageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
+export async function generateStaticParams() {
+  const categories = await db.category.findMany({ where: { isActive: true } });
+  return categories.map((c: any) => ({ category: c.slug }));
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ category: string }> }): Promise<Metadata> {
   const { category: categorySlug } = await params;
   const category = await db.category.findUnique({

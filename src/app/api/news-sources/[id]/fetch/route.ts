@@ -1,3 +1,4 @@
+export const dynamic = "force-static";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { canPublish } from "@/lib/rbac";
@@ -27,3 +28,7 @@ export async function POST(
   }
 }
 
+
+export async function generateStaticParams() {
+  return [];
+}

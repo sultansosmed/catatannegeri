@@ -98,5 +98,35 @@ export const fallbackData: Record<string, any> = {
       return portalData.users.find((u: any) => u.email === email || u.id === id) || null;
     },
   },
+  redirect: {
+    findMany: async () => [],
+    findUnique: async () => null,
+    count: async () => 0,
+  },
+  auditLog: {
+    findMany: async () => [],
+    count: async () => 0,
+  },
+  comment: {
+    findMany: async () => [],
+    count: async () => 0,
+  },
+  ingestedItem: {
+    findMany: async () => [],
+    findUnique: async () => null,
+    count: async () => 0,
+  },
+  ingestionSource: {
+    findMany: async () => [],
+    findUnique: async () => null,
+    count: async () => 0,
+  },
+  newsletterSubscriber: {
+    findMany: async () => [],
+    count: async () => 0,
+  },
+  mediaAsset: {
+    findMany: async () => [],
+    count: async () => 0,
+  },
 };
-

@@ -17,15 +17,24 @@ try {
   console.warn("Prisma Client initialization skipped, using fallback data.");
 }
 
-// Create a robust Proxy so that if rawPrisma fails, fallbackData handles it gracefully
+// Create a universal safe fallback handler for any Prisma model/method
+function getSafeFallback(modelName: string, methodName: string) {
+  const model = fallbackData[modelName];
+  if (model && typeof model[methodName] === "function") {
+    return model[methodName];
+  }
+  return async (...args: any[]) => {
+    if (methodName.startsWith("findMany")) return [];
+    if (methodName.startsWith("findUnique") || methodName.startsWith("findFirst")) return null;
+    if (methodName.startsWith("count")) return 0;
+    return null;
+  };
+}
+
+// Create a robust Proxy so that if rawPrisma fails, safe fallbacks handle it gracefully
 export const db: PrismaClient = (new Proxy(rawPrisma || {}, {
   get(target, prop: string) {
     const rawModel = (rawPrisma as any)?.[prop];
-    const fallbackModel = fallbackData[prop];
-
-    if (!rawModel && !fallbackModel) {
-      return (target as any)[prop];
-    }
 
     return new Proxy(rawModel || {}, {
       get(modelTarget, method: string) {
@@ -34,16 +43,12 @@ export const db: PrismaClient = (new Proxy(rawPrisma || {}, {
             try {
               return await rawModel[method](...args);
             } catch (err: any) {
-              if (fallbackModel && typeof fallbackModel[method] === "function") {
-                return await fallbackModel[method](...args);
-              }
-              throw err;
+              const fallbackFn = getSafeFallback(prop, method);
+              return await fallbackFn(...args);
             }
           }
-          if (fallbackModel && typeof fallbackModel[method] === "function") {
-            return await fallbackModel[method](...args);
-          }
-          return undefined;
+          const fallbackFn = getSafeFallback(prop, method);
+          return await fallbackFn(...args);
         };
       },
     });

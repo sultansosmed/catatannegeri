@@ -36,3 +36,4 @@ for (const routePath of apiRoutes) {
 }
 
 console.log('All API routes prepared for static export!');
+

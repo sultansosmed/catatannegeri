@@ -1,3 +1,14 @@
+// Fallbacks to prevent build failure on Cloudflare Pages / CI runners if env vars are not yet configured
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = "postgresql://dummy:dummy@localhost:5432/catatannegeri?schema=public";
+}
+if (!process.env.NEXT_PUBLIC_SITE_URL) {
+  process.env.NEXT_PUBLIC_SITE_URL = "https://catatannegeri.com";
+}
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = "catatan-negeri-fallback-secret-for-build-safety-32chars";
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,

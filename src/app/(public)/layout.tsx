@@ -9,41 +9,50 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Fetch active categories sorted by sortOrder
-  const categories = await db.category.findMany({
-    where: { isActive: true },
-    orderBy: { sortOrder: "asc" },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-    },
-  });
+  let categories: Array<{ id: string; name: string; slug: string }> = [];
+  let breakingEnabled = false;
+  let activeTickerText = "";
+  let activeTickerLink: string | undefined = undefined;
 
-  // Fetch breaking news settings
-  const breakingSetting = await db.siteSetting.findUnique({
-    where: { key: "breaking_news_enabled" },
-  });
-  const breakingTextSetting = await db.siteSetting.findUnique({
-    where: { key: "breaking_news_text" },
-  });
+  try {
+    // Fetch active categories sorted by sortOrder
+    categories = await db.category.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+      },
+    });
 
-  const breakingEnabled = breakingSetting?.value === "true";
-  const breakingText = breakingTextSetting?.value || "";
+    // Fetch breaking news settings
+    const breakingSetting = await db.siteSetting.findUnique({
+      where: { key: "breaking_news_enabled" },
+    });
+    const breakingTextSetting = await db.siteSetting.findUnique({
+      where: { key: "breaking_news_text" },
+    });
 
-  // Check if there is an active breaking article
-  const breakingArticle = await db.article.findFirst({
-    where: { status: "PUBLISHED", isBreaking: true },
-    orderBy: { publishedAt: "desc" },
-    include: { category: true },
-  });
+    breakingEnabled = breakingSetting?.value === "true";
+    const breakingText = breakingTextSetting?.value || "";
 
-  const activeTickerText = breakingArticle
-    ? breakingArticle.title
-    : breakingText;
-  const activeTickerLink = breakingArticle
-    ? `/${breakingArticle.category.slug}/${breakingArticle.slug}`
-    : undefined;
+    // Check if there is an active breaking article
+    const breakingArticle = await db.article.findFirst({
+      where: { status: "PUBLISHED", isBreaking: true },
+      orderBy: { publishedAt: "desc" },
+      include: { category: true },
+    });
+
+    activeTickerText = breakingArticle
+      ? breakingArticle.title
+      : breakingText;
+    activeTickerLink = breakingArticle
+      ? `/${breakingArticle.category.slug}/${breakingArticle.slug}`
+      : undefined;
+  } catch (err) {
+    console.warn("Database query skipped or unavailable during build:", err);
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-900 selection:bg-brand-red selection:text-white">

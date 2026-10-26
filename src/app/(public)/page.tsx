@@ -9,89 +9,106 @@ import { ArrowRight, Newspaper, Flame, Compass } from "lucide-react";
 export const revalidate = 60; // On-demand revalidation ISR every 60s
 
 export default async function HomePage() {
-  // 1. Fetch Featured Hero Article
-  const featuredArticle = await db.article.findFirst({
-    where: { status: "PUBLISHED", isFeatured: true },
-    orderBy: { publishedAt: "desc" },
-    include: { category: true, author: true },
-  });
+  let featuredArticle: any = null;
+  let topStories: any[] = [];
+  let latestNews: any[] = [];
+  let popularArticles: any[] = [];
+  let editorPicks: any[] = [];
+  let tags: any[] = [];
+  let adTopSetting: any = null;
+  let adTopEnabled = false;
+  let adSidebarSetting: any = null;
+  let adSidebarEnabled = false;
+  let ekonomiArticles: any[] = [];
+  let teknologiArticles: any[] = [];
 
-  // 2. Fetch Top Stories (3 articles next to or below hero)
-  const topStories = await db.article.findMany({
-    where: {
-      status: "PUBLISHED",
-      id: featuredArticle ? { not: featuredArticle.id } : undefined,
-    },
-    take: 4,
-    orderBy: { publishedAt: "desc" },
-    include: { category: true, author: true },
-  });
+  try {
+    // 1. Fetch Featured Hero Article
+    featuredArticle = await db.article.findFirst({
+      where: { status: "PUBLISHED", isFeatured: true },
+      orderBy: { publishedAt: "desc" },
+      include: { category: true, author: true },
+    });
 
-  // 3. Fetch Latest News (stream of recent articles)
-  const excludeIds = [
-    ...(featuredArticle ? [featuredArticle.id] : []),
-    ...topStories.map((a) => a.id),
-  ];
+    // 2. Fetch Top Stories (3 articles next to or below hero)
+    topStories = await db.article.findMany({
+      where: {
+        status: "PUBLISHED",
+        id: featuredArticle ? { not: featuredArticle.id } : undefined,
+      },
+      take: 4,
+      orderBy: { publishedAt: "desc" },
+      include: { category: true, author: true },
+    });
 
-  const latestNews = await db.article.findMany({
-    where: {
-      status: "PUBLISHED",
-      id: { notIn: excludeIds },
-    },
-    take: 8,
-    orderBy: { publishedAt: "desc" },
-    include: { category: true, author: true },
-  });
+    // 3. Fetch Latest News (stream of recent articles)
+    const excludeIds = [
+      ...(featuredArticle ? [featuredArticle.id] : []),
+      ...topStories.map((a) => a.id),
+    ];
 
-  // 4. Fetch Popular / Most Read (by viewCount)
-  const popularArticles = await db.article.findMany({
-    where: { status: "PUBLISHED" },
-    take: 5,
-    orderBy: { viewCount: "desc" },
-    include: { category: true },
-  });
+    latestNews = await db.article.findMany({
+      where: {
+        status: "PUBLISHED",
+        id: { notIn: excludeIds },
+      },
+      take: 8,
+      orderBy: { publishedAt: "desc" },
+      include: { category: true, author: true },
+    });
 
-  // 5. Fetch Editor's Picks
-  const editorPicks = await db.article.findMany({
-    where: { status: "PUBLISHED", isEditorPick: true },
-    take: 4,
-    orderBy: { publishedAt: "desc" },
-    include: { category: true, author: true },
-  });
+    // 4. Fetch Popular / Most Read (by viewCount)
+    popularArticles = await db.article.findMany({
+      where: { status: "PUBLISHED" },
+      take: 5,
+      orderBy: { viewCount: "desc" },
+      include: { category: true },
+    });
 
-  // 6. Fetch Trending Tags
-  const tags = await db.tag.findMany({
-    take: 8,
-    orderBy: { articles: { _count: "desc" } },
-  });
+    // 5. Fetch Editor's Picks
+    editorPicks = await db.article.findMany({
+      where: { status: "PUBLISHED", isEditorPick: true },
+      take: 4,
+      orderBy: { publishedAt: "desc" },
+      include: { category: true, author: true },
+    });
 
-  // 7. Fetch Site Ad Settings
-  const adTopSetting = await db.siteSetting.findUnique({ where: { key: "ad_homepage_top_html" } });
-  const adTopEnabled = (await db.siteSetting.findUnique({ where: { key: "ad_homepage_top_enabled" } }))?.value === "true";
+    // 6. Fetch Trending Tags
+    tags = await db.tag.findMany({
+      take: 8,
+      orderBy: { articles: { _count: "desc" } },
+    });
 
-  const adSidebarSetting = await db.siteSetting.findUnique({ where: { key: "ad_sidebar_html" } });
-  const adSidebarEnabled = (await db.siteSetting.findUnique({ where: { key: "ad_sidebar_enabled" } }))?.value === "true";
+    // 7. Fetch Site Ad Settings
+    adTopSetting = await db.siteSetting.findUnique({ where: { key: "ad_homepage_top_html" } });
+    adTopEnabled = (await db.siteSetting.findUnique({ where: { key: "ad_homepage_top_enabled" } }))?.value === "true";
 
-  // 8. Fetch Category-Specific Highlights: Ekonomi, Teknologi, Nasional
-  const ekonomiCategory = await db.category.findUnique({ where: { slug: "ekonomi" } });
-  const ekonomiArticles = ekonomiCategory
-    ? await db.article.findMany({
-        where: { categoryId: ekonomiCategory.id, status: "PUBLISHED" },
-        take: 3,
-        orderBy: { publishedAt: "desc" },
-        include: { category: true, author: true },
-      })
-    : [];
+    adSidebarSetting = await db.siteSetting.findUnique({ where: { key: "ad_sidebar_html" } });
+    adSidebarEnabled = (await db.siteSetting.findUnique({ where: { key: "ad_sidebar_enabled" } }))?.value === "true";
 
-  const teknologiCategory = await db.category.findUnique({ where: { slug: "teknologi" } });
-  const teknologiArticles = teknologiCategory
-    ? await db.article.findMany({
-        where: { categoryId: teknologiCategory.id, status: "PUBLISHED" },
-        take: 3,
-        orderBy: { publishedAt: "desc" },
-        include: { category: true, author: true },
-      })
-    : [];
+    // 8. Fetch Category-Specific Highlights: Ekonomi, Teknologi, Nasional
+    const ekonomiCategory = await db.category.findUnique({ where: { slug: "ekonomi" } });
+    ekonomiArticles = ekonomiCategory
+      ? await db.article.findMany({
+          where: { categoryId: ekonomiCategory.id, status: "PUBLISHED" },
+          take: 3,
+          orderBy: { publishedAt: "desc" },
+          include: { category: true, author: true },
+        })
+      : [];
+
+    const teknologiCategory = await db.category.findUnique({ where: { slug: "teknologi" } });
+    teknologiArticles = teknologiCategory
+      ? await db.article.findMany({
+          where: { categoryId: teknologiCategory.id, status: "PUBLISHED" },
+          take: 3,
+          orderBy: { publishedAt: "desc" },
+          include: { category: true, author: true },
+        })
+      : [];
+  } catch (err) {
+    console.warn("Homepage database queries skipped or unavailable during build:", err);
+  }
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-6">

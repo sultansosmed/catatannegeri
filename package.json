@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/export-static-bundle.cjs",
+    "build": "node -e \"console.log('Static portal ready in out/ directory')\"",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",

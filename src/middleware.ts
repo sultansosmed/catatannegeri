@@ -28,6 +28,15 @@ export function middleware(request: NextRequest) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
   }
 
+  // 4. Protect Admin Dashboard Routes
+  if (url.pathname.startsWith("/admin") && url.pathname !== "/admin/login") {
+    const sessionCookie = request.cookies.get("cn_session")?.value;
+    if (!sessionCookie) {
+      url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
+    }
+  }
+
   // 4. HSTS Header for production domain
   if (host.includes("catatannegeri.com")) {
     response.headers.set(

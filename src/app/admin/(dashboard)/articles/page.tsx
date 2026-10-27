@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { Plus, Search, Filter, Eye, Edit, Trash2, Calendar, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { ArticleDeleteButton } from "@/components/admin/ArticleDeleteButton";
 
 interface ArticlesPageProps {
   searchParams: Promise<{ status?: string; categoryId?: string; q?: string }>;
@@ -215,6 +216,11 @@ export default async function AdminArticlesListPage({ searchParams }: ArticlesPa
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </Link>
+                      <ArticleDeleteButton
+                        articleId={art.id}
+                        articleTitle={art.title}
+                        userRole={user?.role || "AUTHOR"}
+                      />
                     </div>
                   </td>
                 </tr>

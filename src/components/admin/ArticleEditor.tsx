@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Image as ImageIcon,
   Zap,
+  Trash2,
 } from "lucide-react";
 import { generateSlug } from "@/lib/slug";
 import { getCategoryVisual } from "@/lib/category-images";
@@ -92,8 +93,32 @@ export function ArticleEditor({
   const [activeTab, setActiveTab] = useState<"editor" | "seo" | "sources">("editor");
   const [saving, setSaving] = useState(false);
   const [indexingLoading, setIndexingLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const handleDeleteArticle = async () => {
+    if (!initialData?.id) return;
+    const confirmed = window.confirm(
+      `Apakah Anda yakin ingin menghapus artikel ini secara permanen?\n"${title}"\n\nTindakan ini tidak dapat dibatalkan.`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setErrorMessage("");
+    try {
+      const res = await fetch(`/api/articles/${initialData.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal menghapus artikel.");
+
+      router.push("/admin/articles");
+    } catch (err: any) {
+      setErrorMessage(err.message || "Gagal menghapus artikel.");
+      setDeleting(false);
+    }
+  };
 
   const handleFastIndex = async () => {
     if (!initialData?.id) return;
@@ -282,6 +307,19 @@ export function ArticleEditor({
                 <Eye className="w-4 h-4" />
               </a>
             </>
+          )}
+
+          {initialData?.id && (userRole === "SUPER_ADMIN" || userRole === "EDITOR") && (
+            <button
+              type="button"
+              onClick={handleDeleteArticle}
+              disabled={deleting || saving}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors disabled:opacity-50"
+              title="Hapus Artikel Secara Permanen"
+            >
+              <Trash2 className={`w-3.5 h-3.5 ${deleting ? "animate-spin" : ""}`} />
+              <span>{deleting ? "Menghapus..." : "Hapus"}</span>
+            </button>
           )}
         </div>
       </div>

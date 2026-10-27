@@ -34,6 +34,32 @@ function getSafeFallback(modelName: string, methodName: string) {
 // Create a robust Proxy so that if rawPrisma fails, safe fallbacks handle it gracefully
 export const db: PrismaClient = (new Proxy(rawPrisma || {}, {
   get(target, prop: string) {
+    if (prop === "$transaction") {
+      if (rawPrisma && typeof rawPrisma.$transaction === "function") {
+        return async (...args: any[]) => {
+          try {
+            return await (rawPrisma as any).$transaction(...args);
+          } catch (err: any) {
+            console.error("Prisma $transaction error:", err);
+            if (typeof args[0] === "function") {
+              return await args[0](db);
+            }
+            throw err;
+          }
+        };
+      }
+      return async (...args: any[]) => {
+        if (typeof args[0] === "function") {
+          return await args[0](db);
+        }
+        return null;
+      };
+    }
+
+    if (rawPrisma && typeof (rawPrisma as any)[prop] === "function") {
+      return (rawPrisma as any)[prop].bind(rawPrisma);
+    }
+
     const rawModel = (rawPrisma as any)?.[prop];
 
     return new Proxy(rawModel || {}, {

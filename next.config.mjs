@@ -15,6 +15,7 @@ const nextConfig = {
   reactStrictMode: true,
   trailingSlash: false,
   images: {
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {

@@ -87,3 +87,4 @@ for (const art of portalData.articles) {
 }
 
 console.log('✔ Clean URL index.html routing ensured for all categories and articles!');
+

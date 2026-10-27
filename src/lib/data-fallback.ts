@@ -1,5 +1,15 @@
 import portalData from "@/data/portal-data.json";
 
+function parseDates(item: any) {
+  if (!item) return item;
+  return {
+    ...item,
+    createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+    updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),
+    publishedAt: item.publishedAt ? new Date(item.publishedAt) : (item.createdAt ? new Date(item.createdAt) : new Date()),
+  };
+}
+
 export const fallbackData: Record<string, any> = {
   category: {
     findMany: async (args?: any) => {
@@ -10,12 +20,13 @@ export const fallbackData: Record<string, any> = {
       if (args?.orderBy?.sortOrder === "asc") {
         cats.sort((a, b) => a.sortOrder - b.sortOrder);
       }
-      return cats;
+      return cats.map(parseDates);
     },
     findUnique: async (args: any) => {
       const slug = args?.where?.slug;
       const id = args?.where?.id;
-      return portalData.categories.find((c) => c.slug === slug || c.id === id) || null;
+      const cat = portalData.categories.find((c) => c.slug === slug || c.id === id);
+      return cat ? parseDates(cat) : null;
     },
     count: async () => portalData.categories.length,
   },
@@ -44,7 +55,7 @@ export const fallbackData: Record<string, any> = {
         articles = articles.slice(0, args.take);
       }
       return articles.map((art) => ({
-        ...art,
+        ...parseDates(art),
         category: portalData.categories.find((c) => c.id === art.categoryId) || null,
         author: portalData.profiles.find((p) => p.id === art.authorId) || null,
       }));
@@ -59,7 +70,7 @@ export const fallbackData: Record<string, any> = {
       const art = portalData.articles.find((a) => a.slug === slug || a.id === id);
       if (!art) return null;
       return {
-        ...art,
+        ...parseDates(art),
         category: portalData.categories.find((c) => c.id === art.categoryId) || null,
         author: portalData.profiles.find((p) => p.id === art.authorId) || null,
       };
@@ -70,7 +81,7 @@ export const fallbackData: Record<string, any> = {
     findMany: async (args?: any) => {
       let tags = [...portalData.tags];
       if (args?.take) tags = tags.slice(0, args.take);
-      return tags;
+      return tags.map(parseDates);
     },
   },
   siteSetting: {
@@ -80,11 +91,12 @@ export const fallbackData: Record<string, any> = {
     },
   },
   authorProfile: {
-    findMany: async () => portalData.profiles,
+    findMany: async () => portalData.profiles.map(parseDates),
     findUnique: async (args: any) => {
       const slug = args?.where?.slug;
       const id = args?.where?.id;
-      return portalData.profiles.find((p) => p.slug === slug || p.id === id) || null;
+      const p = portalData.profiles.find((pr) => pr.slug === slug || pr.id === id);
+      return p ? parseDates(p) : null;
     },
   },
   navigationMenu: {

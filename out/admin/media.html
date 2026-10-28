@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pustaka Media — Portal Redaksi Catatan Negeri</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <link rel="icon" href="/brand/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0f172a',
+              red: '#b91c1c',
+              'red-dark': '#991b1b',
+              'red-light': '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    (function() {
+      var user = localStorage.getItem('cn_user');
+      var hasCookie = document.cookie.indexOf('cn_session') !== -1;
+      if (!user && !hasCookie) {
+        window.location.replace('/admin/login');
+      }
+    })();
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 min-h-screen border-r border-slate-800">
+    <!-- Brand -->
+    <div class="h-16 flex items-center px-6 border-b border-slate-800/80 bg-slate-950/40">
+      <a href="/admin" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded bg-brand-red flex items-center justify-center p-1">
+          <img src="/brand/logo.png" alt="Logo" class="w-7 h-7 object-contain">
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-sm tracking-tight text-white">CATATAN<span class="text-brand-red-light">NEGERI</span></span>
+          <span class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Portal Redaksi</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-3 py-4 space-y-1 text-xs">
+      <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/articles" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+        <span>Manajemen Artikel</span>
+      </a>
+      <a href="/admin/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+        <span>Kanal Kategori (20)</span>
+      </a>
+      <a href="/admin/tags" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+        <span>Topik & Tag</span>
+      </a>
+      <a href="/admin/media" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors bg-brand-red text-white font-bold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span>Pustaka Media</span>
+      </a>
+      <a href="/admin/seo" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <span>Technical SEO</span>
+      </a>
+
+      <div class="pt-4 mt-4 border-t border-slate-800">
+        <a href="/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          <span>Lihat Situs Publik</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- User Profile & Logout -->
+    <div class="p-3 border-t border-slate-800 bg-slate-950/60">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-8 h-8 rounded-full bg-brand-red text-white font-bold flex items-center justify-center text-xs flex-shrink-0" id="userAvatar">RN</div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-white truncate" id="userNameDisplay">Tim Redaksi</p>
+            <p class="text-[10px] text-slate-400 truncate" id="userRoleDisplay">SUPER_ADMIN</p>
+          </div>
+        </div>
+        <button onclick="handleLogout()" class="p-1.5 text-slate-400 hover:text-red-400 rounded hover:bg-slate-800 transition-colors" title="Keluar">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- Topbar -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
+      <div>
+        <h1 class="font-serif font-bold text-lg text-brand-navy">Pustaka Media</h1>
+        <p class="text-xs text-slate-500">Galeri visual artikel dan infografik</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Cloudflare Active
+        </span>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-red">Aset Visual Editorial</span>
+        <h2 class="font-serif text-2xl font-black text-brand-navy">Pustaka Media & Galeri Foto</h2>
+        <p class="text-xs text-slate-500 mt-1">Penyimpanan aset foto berita dengan optimasi pengiriman CDN Cloudflare.</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=80" alt="Pembangunan Infrastruktur Konektivitas Daerah Terpencil: Merajut Keadilan Logistik Maritim" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Pembangunan Infrastruktur Konektivitas Daerah Terpencil: Merajut Keadilan Logistik Maritim</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80" alt="Peta Jalan Kecerdasan Buatan Nasional: Membangun Kemandirian Data dan Etika AI di Indonesia" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Peta Jalan Kecerdasan Buatan Nasional: Membangun Kemandirian Data dan Etika AI di Indonesia</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1200&q=80" alt="Transisi Ekosistem Mobil Listrik Nasional: Capaian TKDN dan Tantangan Jaringan Pengisian Daya" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Transisi Ekosistem Mobil Listrik Nasional: Capaian TKDN dan Tantangan Jaringan Pengisian Daya</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80" alt="Strategi Pengelolaan Keuangan Pribadi Generasi Produktif di Tengah Volatilitas Global" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Strategi Pengelolaan Keuangan Pribadi Generasi Produktif di Tengah Volatilitas Global</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1200&q=80" alt="Ketahanan Pangan dan Stabilitas Inflasi: Analisis Strategi Penguatan Distribusi Logistik Nasional 2026" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Ketahanan Pangan dan Stabilitas Inflasi: Analisis Strategi Penguatan Distribusi Logistik Nasional 2026</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" alt="Ekowisata dan Wisata Berkelanjutan: Panduan Menjelajah Pesona Desa Wisata Tanpa Merusak Alam" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Ekowisata dan Wisata Berkelanjutan: Panduan Menjelajah Pesona Desa Wisata Tanpa Merusak Alam</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Eksplorasi Warisan Gastronomi Nusantara: Menjaga Otentisitas Rasa dan Standardisasi Mutu Halal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Eksplorasi Warisan Gastronomi Nusantara: Menjaga Otentisitas Rasa dan Standardisasi Mutu Halal</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80" alt="Kedaulatan Data dan Keamanan Siber: Langkah Konkret Indonesia Membangun Perlindungan Ekosistem Digital" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Kedaulatan Data dan Keamanan Siber: Langkah Konkret Indonesia Membangun Perlindungan Ekosistem Digital</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80" alt="Pemerataan Kualitas Guru dan Fasilitas Pembelajaran: Fondasi Nyata Generasi Emas Indonesia" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Pemerataan Kualitas Guru dan Fasilitas Pembelajaran: Fondasi Nyata Generasi Emas Indonesia</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80" alt="Percepatan Ekosistem Kendaraan Listrik Nasional: Kesiapan SPKLU, Insentif Pajak, dan Edukasi Pengguna" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Percepatan Ekosistem Kendaraan Listrik Nasional: Kesiapan SPKLU, Insentif Pajak, dan Edukasi Pengguna</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80" alt="Peluang Hunian Terjangkau Berbasis TOD bagi Generasi Muda: Analisis Aksesibilitas dan Skema KPR" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Peluang Hunian Terjangkau Berbasis TOD bagi Generasi Muda: Analisis Aksesibilitas dan Skema KPR</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80" alt="Membangun Kebiasaan Hidup Sehat Berkelanjutan: Sinergi Olahraga Teratur, Pola Tidur, dan Pola Makan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Membangun Kebiasaan Hidup Sehat Berkelanjutan: Sinergi Olahraga Teratur, Pola Tidur, dan Pola Makan</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80" alt="Kebangkitan Sinema Karya Anak Bangsa: Rekor Penonton Bioskop dan Daya Saing Narasi Budaya Lokal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Kebangkitan Sinema Karya Anak Bangsa: Rekor Penonton Bioskop dan Daya Saing Narasi Budaya Lokal</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1200&q=80" alt="Panduan Lengkap Mengelola Anggaran Belanja Keluarga: Trik Cermat Hemat Tanpa Mengorbankan Kebutuhan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Panduan Lengkap Mengelola Anggaran Belanja Keluarga: Trik Cermat Hemat Tanpa Mengorbankan Kebutuhan</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80" alt="Literasi Digital Menyikapi Konten Viral di Media Sosial: Panduan Membedakan Fakta dan Manipulasi AI" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Literasi Digital Menyikapi Konten Viral di Media Sosial: Panduan Membedakan Fakta dan Manipulasi AI</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80" alt="Restorasi Pesisir dan Konservasi Mangrove: Benteng Alami Mitigasi Bencana dan Penyerapan Karbon Biru" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Restorasi Pesisir dan Konservasi Mangrove: Benteng Alami Mitigasi Bencana dan Penyerapan Karbon Biru</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80" alt="Revitalisasi Fasilitas Kesehatan Primer: Strategi Terintegrasi Tekan Stunting dan Penyakit Degeneratif" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Revitalisasi Fasilitas Kesehatan Primer: Strategi Terintegrasi Tekan Stunting dan Penyakit Degeneratif</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" alt="Panduan Memilih Gawai Produktivitas 2026: Komparasi Efisiensi Daya, Kapasitas AI, dan Keandalan Kerja" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Panduan Memilih Gawai Produktivitas 2026: Komparasi Efisiensi Daya, Kapasitas AI, dan Keandalan Kerja</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80" alt="Pembinaan Atlet Usia Dini dan Fasilitas Bertaraf Internasional: Menatap Prestasi Global Merah Putih" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Pembinaan Atlet Usia Dini dan Fasilitas Bertaraf Internasional: Menatap Prestasi Global Merah Putih</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=1200&q=80" alt="Transformasi Layanan Publik Digital Nasional: Akselerasi Integrasi Data dan Dampak Nyata bagi Masyarakat" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Transformasi Layanan Publik Digital Nasional: Akselerasi Integrasi Data dan Dampak Nyata bagi Masyarakat</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80" alt="Bank Indonesia Pertahankan BI-Rate: Fokus Jaga Stabilitas Nilai Tukar dan Inflasi Terkendali" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Bank Indonesia Pertahankan BI-Rate: Fokus Jaga Stabilitas Nilai Tukar dan Inflasi Terkendali</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80" alt="Akselerasi Ekspor UMKM ke Pasar Global: Peluang Strategis, Standar Kualitas, dan Pembiayaan Digital" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Akselerasi Ekspor UMKM ke Pasar Global: Peluang Strategis, Standar Kualitas, dan Pembiayaan Digital</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80" alt="Perencanaan Keuangan Rumah Tangga di Era Fluktuasi Ekonomi: Panduan Praktis Dana Darurat dan Investasi Aman" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Perencanaan Keuangan Rumah Tangga di Era Fluktuasi Ekonomi: Panduan Praktis Dana Darurat dan Investasi Aman</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=80" alt="Transparansi Dana Partai dan Partisipasi Publik: Menjaga Kualitas Demokrasi yang Sehat dan Beradab" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Transparansi Dana Partai dan Partisipasi Publik: Menjaga Kualitas Demokrasi yang Sehat dan Beradab</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80" alt="Konektivitas Jalan Daerah: Menggerakkan Roda Distribusi Komoditas Unggulan antar-Kabupaten" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            <div class="p-3">
+              <p class="font-serif text-xs font-bold text-brand-navy line-clamp-1">Konektivitas Jalan Daerah: Menggerakkan Roda Distribusi Komoditas Unggulan antar-Kabupaten</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 truncate">https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80</p>
+            </div>
+          </div>
+        
+      </div>
+    </div>
+  
+    </main>
+  </div>
+
+  <script>
+    // Hydrate User Data from LocalStorage
+    try {
+      const u = JSON.parse(localStorage.getItem('cn_user') || '{}');
+      if (u.name) {
+        document.getElementById('userNameDisplay').textContent = u.name;
+        document.getElementById('userRoleDisplay').textContent = u.role || 'SUPER_ADMIN';
+        const initials = u.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('userAvatar').textContent = initials || 'RN';
+      }
+    } catch(e) {}
+
+    function handleLogout() {
+      localStorage.removeItem('cn_user');
+      document.cookie = 'cn_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      window.location.replace('/admin/login');
+    }
+  </script>
+</body>
+</html>

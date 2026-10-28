@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manajemen Artikel — Portal Redaksi Catatan Negeri</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <link rel="icon" href="/brand/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0f172a',
+              red: '#b91c1c',
+              'red-dark': '#991b1b',
+              'red-light': '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    (function() {
+      var user = localStorage.getItem('cn_user');
+      var hasCookie = document.cookie.indexOf('cn_session') !== -1;
+      if (!user && !hasCookie) {
+        window.location.replace('/admin/login');
+      }
+    })();
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 min-h-screen border-r border-slate-800">
+    <!-- Brand -->
+    <div class="h-16 flex items-center px-6 border-b border-slate-800/80 bg-slate-950/40">
+      <a href="/admin" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded bg-brand-red flex items-center justify-center p-1">
+          <img src="/brand/logo.png" alt="Logo" class="w-7 h-7 object-contain">
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-sm tracking-tight text-white">CATATAN<span class="text-brand-red-light">NEGERI</span></span>
+          <span class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Portal Redaksi</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-3 py-4 space-y-1 text-xs">
+      <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/articles" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors bg-brand-red text-white font-bold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+        <span>Manajemen Artikel</span>
+      </a>
+      <a href="/admin/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+        <span>Kanal Kategori (20)</span>
+      </a>
+      <a href="/admin/tags" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+        <span>Topik & Tag</span>
+      </a>
+      <a href="/admin/media" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span>Pustaka Media</span>
+      </a>
+      <a href="/admin/seo" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <span>Technical SEO</span>
+      </a>
+
+      <div class="pt-4 mt-4 border-t border-slate-800">
+        <a href="/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          <span>Lihat Situs Publik</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- User Profile & Logout -->
+    <div class="p-3 border-t border-slate-800 bg-slate-950/60">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-8 h-8 rounded-full bg-brand-red text-white font-bold flex items-center justify-center text-xs flex-shrink-0" id="userAvatar">RN</div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-white truncate" id="userNameDisplay">Tim Redaksi</p>
+            <p class="text-[10px] text-slate-400 truncate" id="userRoleDisplay">SUPER_ADMIN</p>
+          </div>
+        </div>
+        <button onclick="handleLogout()" class="p-1.5 text-slate-400 hover:text-red-400 rounded hover:bg-slate-800 transition-colors" title="Keluar">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- Topbar -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
+      <div>
+        <h1 class="font-serif font-bold text-lg text-brand-navy">Manajemen Artikel</h1>
+        <p class="text-xs text-slate-500">Koleksi seluruh penerbitan berita nasional</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Cloudflare Active
+        </span>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-red">Arsip & Sirkulasi</span>
+          <h2 class="font-serif text-2xl font-black text-brand-navy">Daftar Artikel Redaksi</h2>
+          <p class="text-xs text-slate-500 mt-1">Total 25 artikel terdaftar dalam sistem.</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+              <tr>
+                <th class="px-6 py-3">No</th>
+                <th class="px-6 py-3">Judul Berita</th>
+                <th class="px-4 py-3">Kategori</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-6 py-3 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">1</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/daerah/pembangunan-infrastruktur-konektivitas-daerah-keadilan-logistik" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Pembangunan Infrastruktur Konektivitas Daerah Terpencil: Merajut Keadilan Logistik Maritim</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/daerah/pembangunan-infrastruktur-konektivitas-daerah-keadilan-logistik</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Daerah</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/daerah/pembangunan-infrastruktur-konektivitas-daerah-keadilan-logistik" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">2</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/teknologi/peta-jalan-kecerdasan-buatan-nasional-kemandirian-data-etika-ai" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Peta Jalan Kecerdasan Buatan Nasional: Membangun Kemandirian Data dan Etika AI di Indonesia</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/teknologi/peta-jalan-kecerdasan-buatan-nasional-kemandirian-data-etika-ai</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Teknologi</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/teknologi/peta-jalan-kecerdasan-buatan-nasional-kemandirian-data-etika-ai" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">3</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/otomotif/transisi-ekosistem-mobil-listrik-nasional-tkdn-spklu" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Transisi Ekosistem Mobil Listrik Nasional: Capaian TKDN dan Tantangan Jaringan Pengisian Daya</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/otomotif/transisi-ekosistem-mobil-listrik-nasional-tkdn-spklu</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Otomotif</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/otomotif/transisi-ekosistem-mobil-listrik-nasional-tkdn-spklu" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">4</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/keuangan/strategi-pengelolaan-keuangan-pribadi-generasi-produktif" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Strategi Pengelolaan Keuangan Pribadi Generasi Produktif di Tengah Volatilitas Global</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/keuangan/strategi-pengelolaan-keuangan-pribadi-generasi-produktif</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Keuangan</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/keuangan/strategi-pengelolaan-keuangan-pribadi-generasi-produktif" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">5</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/ekonomi/ketahanan-pangan-dan-stabilitas-inflasi-analisis-strategi-penguatan-distribusi-logistik-nasional-2026" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Ketahanan Pangan dan Stabilitas Inflasi: Analisis Strategi Penguatan Distribusi Logistik Nasional 2026</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/ekonomi/ketahanan-pangan-dan-stabilitas-inflasi-analisis-strategi-penguatan-distribusi-logistik-nasional-2026</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Ekonomi</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/ekonomi/ketahanan-pangan-dan-stabilitas-inflasi-analisis-strategi-penguatan-distribusi-logistik-nasional-2026" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">6</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/travel/ekowisata-dan-wisata-berkelanjutan-panduan-menjelajah-pesona-desa-wisata-tanpa-merusak-alam" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Ekowisata dan Wisata Berkelanjutan: Panduan Menjelajah Pesona Desa Wisata Tanpa Merusak Alam</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/travel/ekowisata-dan-wisata-berkelanjutan-panduan-menjelajah-pesona-desa-wisata-tanpa-merusak-alam</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Travel</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/travel/ekowisata-dan-wisata-berkelanjutan-panduan-menjelajah-pesona-desa-wisata-tanpa-merusak-alam" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">7</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/kuliner/eksplorasi-warisan-gastronomi-nusantara-menjaga-otentisitas-rasa-dan-standardisasi-mutu-halal" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Eksplorasi Warisan Gastronomi Nusantara: Menjaga Otentisitas Rasa dan Standardisasi Mutu Halal</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/kuliner/eksplorasi-warisan-gastronomi-nusantara-menjaga-otentisitas-rasa-dan-standardisasi-mutu-halal</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Kuliner</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/kuliner/eksplorasi-warisan-gastronomi-nusantara-menjaga-otentisitas-rasa-dan-standardisasi-mutu-halal" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">8</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/teknologi/kedaulatan-data-dan-keamanan-siber-langkah-konkret-indonesia-membangun-perlindungan-ekosistem-digital" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Kedaulatan Data dan Keamanan Siber: Langkah Konkret Indonesia Membangun Perlindungan Ekosistem Digital</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/teknologi/kedaulatan-data-dan-keamanan-siber-langkah-konkret-indonesia-membangun-perlindungan-ekosistem-digital</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Teknologi</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/teknologi/kedaulatan-data-dan-keamanan-siber-langkah-konkret-indonesia-membangun-perlindungan-ekosistem-digital" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">9</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/pendidikan/pemerataan-kualitas-guru-dan-fasilitas-pembelajaran-fondasi-nyata-generasi-emas-indonesia" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Pemerataan Kualitas Guru dan Fasilitas Pembelajaran: Fondasi Nyata Generasi Emas Indonesia</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/pendidikan/pemerataan-kualitas-guru-dan-fasilitas-pembelajaran-fondasi-nyata-generasi-emas-indonesia</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Pendidikan</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/pendidikan/pemerataan-kualitas-guru-dan-fasilitas-pembelajaran-fondasi-nyata-generasi-emas-indonesia" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">10</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/otomotif/percepatan-ekosistem-kendaraan-listrik-nasional-kesiapan-spklu-insentif-pajak-dan-edukasi-pengguna" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Percepatan Ekosistem Kendaraan Listrik Nasional: Kesiapan SPKLU, Insentif Pajak, dan Edukasi Pengguna</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/otomotif/percepatan-ekosistem-kendaraan-listrik-nasional-kesiapan-spklu-insentif-pajak-dan-edukasi-pengguna</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Otomotif</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/otomotif/percepatan-ekosistem-kendaraan-listrik-nasional-kesiapan-spklu-insentif-pajak-dan-edukasi-pengguna" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">11</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/properti/peluang-hunian-terjangkau-berbasis-tod-bagi-generasi-muda-analisis-aksesibilitas-dan-skema-kpr" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Peluang Hunian Terjangkau Berbasis TOD bagi Generasi Muda: Analisis Aksesibilitas dan Skema KPR</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/properti/peluang-hunian-terjangkau-berbasis-tod-bagi-generasi-muda-analisis-aksesibilitas-dan-skema-kpr</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Properti</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/properti/peluang-hunian-terjangkau-berbasis-tod-bagi-generasi-muda-analisis-aksesibilitas-dan-skema-kpr" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">12</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/gaya-hidup/membangun-kebiasaan-hidup-sehat-berkelanjutan-sinergi-olahraga-teratur-pola-tidur-dan-pola-makan" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Membangun Kebiasaan Hidup Sehat Berkelanjutan: Sinergi Olahraga Teratur, Pola Tidur, dan Pola Makan</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/gaya-hidup/membangun-kebiasaan-hidup-sehat-berkelanjutan-sinergi-olahraga-teratur-pola-tidur-dan-pola-makan</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Gaya Hidup</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/gaya-hidup/membangun-kebiasaan-hidup-sehat-berkelanjutan-sinergi-olahraga-teratur-pola-tidur-dan-pola-makan" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">13</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/hiburan/kebangkitan-sinema-karya-anak-bangsa-rekor-penonton-bioskop-dan-daya-saing-narasi-budaya-lokal" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Kebangkitan Sinema Karya Anak Bangsa: Rekor Penonton Bioskop dan Daya Saing Narasi Budaya Lokal</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/hiburan/kebangkitan-sinema-karya-anak-bangsa-rekor-penonton-bioskop-dan-daya-saing-narasi-budaya-lokal</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Hiburan</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/hiburan/kebangkitan-sinema-karya-anak-bangsa-rekor-penonton-bioskop-dan-daya-saing-narasi-budaya-lokal" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">14</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/tips-dan-panduan/panduan-lengkap-mengelola-anggaran-belanja-keluarga-trik-cermat-hemat-tanpa-mengorbankan-kebutuhan" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Panduan Lengkap Mengelola Anggaran Belanja Keluarga: Trik Cermat Hemat Tanpa Mengorbankan Kebutuhan</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/tips-dan-panduan/panduan-lengkap-mengelola-anggaran-belanja-keluarga-trik-cermat-hemat-tanpa-mengorbankan-kebutuhan</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Tips dan Panduan</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/tips-dan-panduan/panduan-lengkap-mengelola-anggaran-belanja-keluarga-trik-cermat-hemat-tanpa-mengorbankan-kebutuhan" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">15</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/tren-dan-viral/literasi-digital-menyikapi-konten-viral-di-media-sosial-panduan-membedakan-fakta-dan-manipulasi-ai" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Literasi Digital Menyikapi Konten Viral di Media Sosial: Panduan Membedakan Fakta dan Manipulasi AI</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/tren-dan-viral/literasi-digital-menyikapi-konten-viral-di-media-sosial-panduan-membedakan-fakta-dan-manipulasi-ai</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Tren dan Viral</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/tren-dan-viral/literasi-digital-menyikapi-konten-viral-di-media-sosial-panduan-membedakan-fakta-dan-manipulasi-ai" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">16</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/lingkungan/restorasi-pesisir-dan-konservasi-mangrove-benteng-alami-mitigasi-bencana-dan-penyerapan-karbon-biru" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Restorasi Pesisir dan Konservasi Mangrove: Benteng Alami Mitigasi Bencana dan Penyerapan Karbon Biru</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/lingkungan/restorasi-pesisir-dan-konservasi-mangrove-benteng-alami-mitigasi-bencana-dan-penyerapan-karbon-biru</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Lingkungan</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/lingkungan/restorasi-pesisir-dan-konservasi-mangrove-benteng-alami-mitigasi-bencana-dan-penyerapan-karbon-biru" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">17</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/kesehatan/revitalisasi-fasilitas-kesehatan-primer-strategi-terintegrasi-tekan-stunting-dan-penyakit-degeneratif" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Revitalisasi Fasilitas Kesehatan Primer: Strategi Terintegrasi Tekan Stunting dan Penyakit Degeneratif</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/kesehatan/revitalisasi-fasilitas-kesehatan-primer-strategi-terintegrasi-tekan-stunting-dan-penyakit-degeneratif</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Kesehatan</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/kesehatan/revitalisasi-fasilitas-kesehatan-primer-strategi-terintegrasi-tekan-stunting-dan-penyakit-degeneratif" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">18</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/gadget/panduan-memilih-gawai-produktivitas-2026-komparasi-efisiensi-daya-kapasitas-ai-dan-keandalan-kerja" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Panduan Memilih Gawai Produktivitas 2026: Komparasi Efisiensi Daya, Kapasitas AI, dan Keandalan Kerja</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/gadget/panduan-memilih-gawai-produktivitas-2026-komparasi-efisiensi-daya-kapasitas-ai-dan-keandalan-kerja</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Gadget</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/gadget/panduan-memilih-gawai-produktivitas-2026-komparasi-efisiensi-daya-kapasitas-ai-dan-keandalan-kerja" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">19</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/olahraga/pembinaan-atlet-usia-dini-dan-fasilitas-bertaraf-internasional-menatap-prestasi-global-merah-putih" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Pembinaan Atlet Usia Dini dan Fasilitas Bertaraf Internasional: Menatap Prestasi Global Merah Putih</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/olahraga/pembinaan-atlet-usia-dini-dan-fasilitas-bertaraf-internasional-menatap-prestasi-global-merah-putih</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Olahraga</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/olahraga/pembinaan-atlet-usia-dini-dan-fasilitas-bertaraf-internasional-menatap-prestasi-global-merah-putih" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">20</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/nasional/transformasi-layanan-publik-digital-nasional-akselerasi-integrasi-data-dan-dampak-nyata-bagi-masyarakat" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Transformasi Layanan Publik Digital Nasional: Akselerasi Integrasi Data dan Dampak Nyata bagi Masyarakat</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/nasional/transformasi-layanan-publik-digital-nasional-akselerasi-integrasi-data-dan-dampak-nyata-bagi-masyarakat</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Nasional</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/nasional/transformasi-layanan-publik-digital-nasional-akselerasi-integrasi-data-dan-dampak-nyata-bagi-masyarakat" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">21</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/ekonomi/bank-indonesia-pertahankan-bi-rate-fokus-stabilitas-inflasi" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Bank Indonesia Pertahankan BI-Rate: Fokus Jaga Stabilitas Nilai Tukar dan Inflasi Terkendali</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/ekonomi/bank-indonesia-pertahankan-bi-rate-fokus-stabilitas-inflasi</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Ekonomi</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/ekonomi/bank-indonesia-pertahankan-bi-rate-fokus-stabilitas-inflasi" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">22</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/bisnis/akselerasi-ekspor-umkm-ke-pasar-global-peluang-strategis-standar-kualitas-dan-pembiayaan-digital" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Akselerasi Ekspor UMKM ke Pasar Global: Peluang Strategis, Standar Kualitas, dan Pembiayaan Digital</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/bisnis/akselerasi-ekspor-umkm-ke-pasar-global-peluang-strategis-standar-kualitas-dan-pembiayaan-digital</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Bisnis</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/bisnis/akselerasi-ekspor-umkm-ke-pasar-global-peluang-strategis-standar-kualitas-dan-pembiayaan-digital" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">23</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/keuangan/perencanaan-keuangan-rumah-tangga-di-era-fluktuasi-ekonomi-panduan-praktis-dana-darurat-dan-investasi-aman" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Perencanaan Keuangan Rumah Tangga di Era Fluktuasi Ekonomi: Panduan Praktis Dana Darurat dan Investasi Aman</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/keuangan/perencanaan-keuangan-rumah-tangga-di-era-fluktuasi-ekonomi-panduan-praktis-dana-darurat-dan-investasi-aman</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Keuangan</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/keuangan/perencanaan-keuangan-rumah-tangga-di-era-fluktuasi-ekonomi-panduan-praktis-dana-darurat-dan-investasi-aman" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">24</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/politik/transparansi-dana-partai-dan-partisipasi-publik-menjaga-kualitas-demokrasi-yang-sehat-dan-beradab" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Transparansi Dana Partai dan Partisipasi Publik: Menjaga Kualitas Demokrasi yang Sehat dan Beradab</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/politik/transparansi-dana-partai-dan-partisipasi-publik-menjaga-kualitas-demokrasi-yang-sehat-dan-beradab</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Politik</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/politik/transparansi-dana-partai-dan-partisipasi-publik-menjaga-kualitas-demokrasi-yang-sehat-dan-beradab" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3.5 text-slate-400 font-mono">25</td>
+                    <td class="px-6 py-3.5 max-w-lg">
+                      <a href="/daerah/konektivitas-jalan-daerah-menggerakkan-roda-distribusi-komoditas-unggulan-antar-kabupaten" target="_blank" class="font-bold text-slate-900 font-serif hover:text-brand-red line-clamp-1">Konektivitas Jalan Daerah: Menggerakkan Roda Distribusi Komoditas Unggulan antar-Kabupaten</a>
+                      <p class="text-[10px] text-slate-400 mt-0.5">/daerah/konektivitas-jalan-daerah-menggerakkan-roda-distribusi-komoditas-unggulan-antar-kabupaten</p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">Daerah</span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">PUBLISHED</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-right whitespace-nowrap">
+                      <a href="/daerah/konektivitas-jalan-daerah-menggerakkan-roda-distribusi-komoditas-unggulan-antar-kabupaten" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-white hover:bg-brand-navy border border-slate-200 rounded-lg transition-colors">
+                        Lihat Berita
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </a>
+                    </td>
+                  </tr>
+                
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  
+    </main>
+  </div>
+
+  <script>
+    // Hydrate User Data from LocalStorage
+    try {
+      const u = JSON.parse(localStorage.getItem('cn_user') || '{}');
+      if (u.name) {
+        document.getElementById('userNameDisplay').textContent = u.name;
+        document.getElementById('userRoleDisplay').textContent = u.role || 'SUPER_ADMIN';
+        const initials = u.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('userAvatar').textContent = initials || 'RN';
+      }
+    } catch(e) {}
+
+    function handleLogout() {
+      localStorage.removeItem('cn_user');
+      document.cookie = 'cn_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      window.location.replace('/admin/login');
+    }
+  </script>
+</body>
+</html>

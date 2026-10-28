@@ -6,7 +6,7 @@ const outDir = path.join(__dirname, '..', 'out');
 const SITE_URL = 'https://catatannegeri.com';
 
 // 1. Remove conflicting directories if they exist
-['sitemap.xml', 'news-sitemap.xml', 'robots.txt', 'rss.xml', '(public)', 'admin', 'api'].forEach((item) => {
+['sitemap.xml', 'news-sitemap.xml', 'robots.txt', 'rss.xml', '(public)', 'api'].forEach((item) => {
   const p = path.join(outDir, item);
   if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
     fs.rmSync(p, { recursive: true, force: true });
@@ -85,6 +85,9 @@ for (const art of portalData.articles) {
     fs.copyFileSync(artHtml, artIndexHtml);
   }
 }
+
+// 8. Ensure Clean Admin Routing
+require('./generate-static-admin.cjs');
 
 console.log('✔ Clean URL index.html routing ensured for all categories and articles!');
 

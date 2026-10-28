@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kanal Kategori — Portal Redaksi Catatan Negeri</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <link rel="icon" href="/brand/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0f172a',
+              red: '#b91c1c',
+              'red-dark': '#991b1b',
+              'red-light': '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    (function() {
+      var user = localStorage.getItem('cn_user');
+      var hasCookie = document.cookie.indexOf('cn_session') !== -1;
+      if (!user && !hasCookie) {
+        window.location.replace('/admin/login');
+      }
+    })();
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 min-h-screen border-r border-slate-800">
+    <!-- Brand -->
+    <div class="h-16 flex items-center px-6 border-b border-slate-800/80 bg-slate-950/40">
+      <a href="/admin" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded bg-brand-red flex items-center justify-center p-1">
+          <img src="/brand/logo.png" alt="Logo" class="w-7 h-7 object-contain">
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-sm tracking-tight text-white">CATATAN<span class="text-brand-red-light">NEGERI</span></span>
+          <span class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Portal Redaksi</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-3 py-4 space-y-1 text-xs">
+      <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/articles" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+        <span>Manajemen Artikel</span>
+      </a>
+      <a href="/admin/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors bg-brand-red text-white font-bold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+        <span>Kanal Kategori (20)</span>
+      </a>
+      <a href="/admin/tags" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+        <span>Topik & Tag</span>
+      </a>
+      <a href="/admin/media" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span>Pustaka Media</span>
+      </a>
+      <a href="/admin/seo" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <span>Technical SEO</span>
+      </a>
+
+      <div class="pt-4 mt-4 border-t border-slate-800">
+        <a href="/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          <span>Lihat Situs Publik</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- User Profile & Logout -->
+    <div class="p-3 border-t border-slate-800 bg-slate-950/60">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-8 h-8 rounded-full bg-brand-red text-white font-bold flex items-center justify-center text-xs flex-shrink-0" id="userAvatar">RN</div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-white truncate" id="userNameDisplay">Tim Redaksi</p>
+            <p class="text-[10px] text-slate-400 truncate" id="userRoleDisplay">SUPER_ADMIN</p>
+          </div>
+        </div>
+        <button onclick="handleLogout()" class="p-1.5 text-slate-400 hover:text-red-400 rounded hover:bg-slate-800 transition-colors" title="Keluar">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- Topbar -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
+      <div>
+        <h1 class="font-serif font-bold text-lg text-brand-navy">Kanal Kategori</h1>
+        <p class="text-xs text-slate-500">Kelola 20 rubrikasi pemberitaan Catatan Negeri</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Cloudflare Active
+        </span>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-red">Struktur Taksonomi</span>
+        <h2 class="font-serif text-2xl font-black text-brand-navy">Manajemen Kanal Kategori</h2>
+        <p class="text-xs text-slate-500 mt-1">20 Kanal utama editorial Catatan Negeri yang terindeks secara kanonikal.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#1</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Nasional</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Berita aktual peristiwa, kebijakan publik, dan dinamika kebangsaan Indonesia.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/nasional</span>
+              <a href="/nasional" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#2</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Daerah</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Kabar dan dinamika pembangunan dari pelosok Sabang sampai Merauke.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/daerah</span>
+              <a href="/daerah" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#3</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Politik</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Analisis politik, pemilu, legislatif, dan kebijakan pemerintahan.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/politik</span>
+              <a href="/politik" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#4</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Ekonomi</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Indikator makro ekonomi, moneter, fiskal, dan perdagangan nasional.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/ekonomi</span>
+              <a href="/ekonomi" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#5</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Bisnis</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Dunia usaha, industri, perbankan, pasar modal, dan aksi korporasi.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/bisnis</span>
+              <a href="/bisnis" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#6</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Teknologi</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Inovasi digital, AI, transformasi industri, dan perkembangan sains.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/teknologi</span>
+              <a href="/teknologi" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#7</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Gadget</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Ulasan smartphone, laptop, piranti pintar, dan panduan beli gadget.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/gadget</span>
+              <a href="/gadget" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#8</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Otomotif</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Kendaraan listrik, industri otomotif, review mobil dan motor terbaru.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/otomotif</span>
+              <a href="/otomotif" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#9</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Pendidikan</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Kurikulum, perguruan tinggi, beasiswa, dan inovasi edukasi nusantara.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/pendidikan</span>
+              <a href="/pendidikan" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#10</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Kesehatan</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Gaya hidup sehat, info medis terpercaya, nutrisi, dan kesehatan keluarga.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/kesehatan</span>
+              <a href="/kesehatan" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#11</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Gaya Hidup</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Tren fesyen, produktivitas, hubungan sosial, dan psikologi modern.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/gaya-hidup</span>
+              <a href="/gaya-hidup" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#12</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Hiburan</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Sinema Indonesia, musik, budaya pop, dan ulasan seni kontemporer.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/hiburan</span>
+              <a href="/hiburan" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#13</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Olahraga</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Kabar Timnas Indonesia, sepak bola dunia, bulutangkis, dan atletik.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/olahraga</span>
+              <a href="/olahraga" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#14</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Travel</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Destinasi wisata prioritas Indonesia, eksplorasi alam, dan panduan perjalanan.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/travel</span>
+              <a href="/travel" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#15</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Kuliner</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Kekayaan kuliner tradisional nusantara, kafe, dan resep autentik.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/kuliner</span>
+              <a href="/kuliner" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#16</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Properti</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Pasar rumah tapak, apartemen, tips KPR, dan investasi properti.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/properti</span>
+              <a href="/properti" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#17</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Keuangan</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Perencanaan keuangan pribadi, investasi reksadana, saham, dan emas.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/keuangan</span>
+              <a href="/keuangan" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#18</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Tips dan Panduan</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Panduan praktis sehari-hari, tutorial teknologi, dan solusi masalah kerja.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/tips-dan-panduan</span>
+              <a href="/tips-dan-panduan" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#19</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Lingkungan</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Konservasi alam, transisi energi hijau, dan aksi perubahan iklim.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/lingkungan</span>
+              <a href="/lingkungan" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono font-bold text-slate-400">#20</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">Tren dan Viral</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Topik hangat media sosial, fenomena internet, dan percakapan publik terkini.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-400">/tren-dan-viral</span>
+              <a href="/tren-dan-viral" target="_blank" class="text-xs font-bold text-brand-red hover:underline">Buka Kanal &rarr;</a>
+            </div>
+          </div>
+        
+      </div>
+    </div>
+  
+    </main>
+  </div>
+
+  <script>
+    // Hydrate User Data from LocalStorage
+    try {
+      const u = JSON.parse(localStorage.getItem('cn_user') || '{}');
+      if (u.name) {
+        document.getElementById('userNameDisplay').textContent = u.name;
+        document.getElementById('userRoleDisplay').textContent = u.role || 'SUPER_ADMIN';
+        const initials = u.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('userAvatar').textContent = initials || 'RN';
+      }
+    } catch(e) {}
+
+    function handleLogout() {
+      localStorage.removeItem('cn_user');
+      document.cookie = 'cn_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      window.location.replace('/admin/login');
+    }
+  </script>
+</body>
+</html>

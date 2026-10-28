@@ -21,13 +21,96 @@ function generateStaticAdmin() {
   ensureDir(path.join(adminDir, 'media'));
   ensureDir(path.join(adminDir, 'seo'));
 
-  // 1. Copy Login Page from Next.js build
+  // 1. Copy Login Page from Next.js build and ensure styles & scripts are active
   const nextLoginHtml = path.join(nextDir, 'server', 'app', 'admin', 'login.html');
   if (fs.existsSync(nextLoginHtml)) {
-    const loginContent = fs.readFileSync(nextLoginHtml, 'utf8');
+    let loginContent = fs.readFileSync(nextLoginHtml, 'utf8');
+
+    // Inject Tailwind CDN, styles, and instant interactions
+    const stylingInjection = `
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0f172a',
+              red: '#b91c1c',
+              'red-dark': '#991b1b',
+              'red-light': '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .lucide { display: inline-block; vertical-align: middle; }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var emailInput = document.querySelector('input[type="email"]');
+      var passwordInput = document.querySelector('input[type="password"]');
+      var form = document.querySelector('form');
+      var buttons = document.querySelectorAll('button');
+
+      buttons.forEach(function(btn) {
+        var text = btn.textContent.trim().toLowerCase();
+        if (text.includes('super admin')) {
+          btn.onclick = function(e) {
+            e.preventDefault();
+            if (emailInput) emailInput.value = 'redaksi@catatannegeri.com';
+            if (passwordInput) passwordInput.value = 'Admin123!CatatanNegeri';
+          };
+        } else if (text.includes('editor')) {
+          btn.onclick = function(e) {
+            e.preventDefault();
+            if (emailInput) emailInput.value = 'editor@catatannegeri.com';
+            if (passwordInput) passwordInput.value = 'Editor123!CatatanNegeri';
+          };
+        } else if (text.includes('wartawan')) {
+          btn.onclick = function(e) {
+            e.preventDefault();
+            if (emailInput) emailInput.value = 'dewi.lestari@catatannegeri.com';
+            if (passwordInput) passwordInput.value = 'Author123!CatatanNegeri';
+          };
+        }
+      });
+
+      if (form) {
+        form.onsubmit = function(e) {
+          e.preventDefault();
+          var email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+          var password = passwordInput ? passwordInput.value.trim() : '';
+
+          if (
+            (email === 'redaksi@catatannegeri.com' && password === 'Admin123!CatatanNegeri') ||
+            (email === 'editor@catatannegeri.com' && password === 'Editor123!CatatanNegeri') ||
+            (email === 'dewi.lestari@catatannegeri.com' && (password === 'Author123!CatatanNegeri' || password === 'Wartawan123!CatatanNegeri'))
+          ) {
+            var user = {
+              name: email.indexOf('redaksi') !== -1 ? 'Tim Redaksi Catatan Negeri' : (email.indexOf('editor') !== -1 ? 'Budi Santoso' : 'Dewi Lestari'),
+              email: email,
+              role: email.indexOf('redaksi') !== -1 ? 'SUPER_ADMIN' : (email.indexOf('editor') !== -1 ? 'EDITOR' : 'AUTHOR')
+            };
+            localStorage.setItem('cn_user', JSON.stringify(user));
+            document.cookie = 'cn_session=authenticated; path=/; max-age=604800; SameSite=Lax';
+            window.location.href = '/admin';
+          } else {
+            alert('Surel atau kata sandi tidak cocok.');
+          }
+        };
+      }
+    });
+  </script>
+`;
+    loginContent = loginContent.replace('</head>', `${stylingInjection}</head>`);
+
     fs.writeFileSync(path.join(adminDir, 'login', 'index.html'), loginContent, 'utf8');
     fs.writeFileSync(path.join(adminDir, 'login.html'), loginContent, 'utf8');
-    console.log(' ✔ Created out/admin/login/index.html and out/admin/login.html');
+    console.log(' ✔ Created out/admin/login/index.html and out/admin/login.html with guaranteed styling');
   }
 
   // Common Header & Sidebar Template
@@ -461,3 +544,4 @@ function generateStaticAdmin() {
 }
 
 generateStaticAdmin();
+

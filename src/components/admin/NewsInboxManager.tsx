@@ -137,14 +137,14 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
     setIsSyncingNational(true);
     setFeedback(null);
     try {
-      const res = await fetch("/api/ingestion/sync-all?limit=10&autoDraft=true", {
+      const res = await fetch("/api/ingestion/sync-all?limit=10&autoDraft=true&autoPublish=true", {
         method: "POST",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gagal sinkronisasi berita nasional.");
 
       setFeedback({
-        text: `🎉 Berhasil! Diproses ${data.totalSources} sumber media nasional (Antara, CNN, CNBC, Tempo, Republika). Ditemukan ${data.totalNewDiscovered} berita baru, ${data.totalDraftsGenerated} draft AI tersusun siap terbit.`,
+        text: `🎉 Auto-Pilot Berhasil! ${data.totalSources} sumber media nasional diproses. Ditemukan ${data.totalNewDiscovered} berita baru, dan ${data.totalAutoPublished || data.totalDraftsGenerated} artikel LANGSUNG DITERBITKAN secara otomatis tanpa persetujuan manual!`,
       });
       await refreshItems();
       router.refresh();
@@ -256,6 +256,34 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
 
   return (
     <div className="space-y-6">
+      {/* Auto-Pilot Status Banner */}
+      <div className="bg-gradient-to-r from-emerald-900 to-teal-900 text-white p-4 rounded-xl shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-emerald-700/50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-5 h-5 text-emerald-400 animate-pulse" />
+          </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-bold text-sm tracking-tight">Mode Auto-Pilot Publikasi Otomatis: AKTIF</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                100% Tanpa Persetujuan Manual
+              </span>
+            </div>
+            <p className="text-xs text-emerald-200/80 mt-0.5">
+              Setiap berita baru dari 15 media nasional otomatis ditarik, ditulis ulang 1.200 kata, dan langsung diterbitkan ke website.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={handleSyncNationalNews}
+          disabled={isSyncingNational}
+          className="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 flex-shrink-0 shadow-sm"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isSyncingNational ? "animate-spin" : ""}`} />
+          <span>{isSyncingNational ? "Memproses Auto-Pilot..." : "Jalankan Auto-Pilot Sekarang"}</span>
+        </button>
+      </div>
+
       {/* Overview Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">

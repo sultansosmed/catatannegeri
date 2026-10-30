@@ -1,9 +1,16 @@
 import Parser from "rss-parser";
 import { URL } from "url";
+import fs from "fs";
+import path from "path";
+import { ArticleStatus } from "@prisma/client";
 import { db } from "./db";
 import { safeFetchText } from "./network-safety";
 import { logAuditEvent } from "./audit";
 import { generateAiNewsDraft } from "./ai-news-draft";
+import { generateSlug } from "./slug";
+import { calculateReadingTime, SITE_URL } from "./seo";
+import { getCategoryVisual } from "./category-images";
+import { notifySearchEnginesOfNewArticle } from "./indexing-service";
 
 const rssParser = new Parser({
   customFields: {
@@ -19,6 +26,34 @@ const rssParser = new Parser({
     ],
   },
 });
+
+/**
+ * Syncs published article directly to portal-data.json for edge / static serving
+ */
+function syncArticleToPortalData(article: any) {
+  try {
+    const portalDataPath = path.join(process.cwd(), "src", "data", "portal-data.json");
+    if (fs.existsSync(portalDataPath)) {
+      const data = JSON.parse(fs.readFileSync(portalDataPath, "utf8"));
+      if (Array.isArray(data.articles)) {
+        const idx = data.articles.findIndex((a: any) => a.id === article.id || a.slug === article.slug);
+        const articleJson = {
+          ...article,
+          category: article.category ? { id: article.category.id, name: article.category.name, slug: article.category.slug } : undefined,
+          author: article.author ? { id: article.author.id, displayName: article.author.displayName } : undefined,
+        };
+        if (idx >= 0) {
+          data.articles[idx] = { ...data.articles[idx], ...articleJson };
+        } else {
+          data.articles.unshift(articleJson);
+        }
+        fs.writeFileSync(portalDataPath, JSON.stringify(data, null, 2), "utf8");
+      }
+    }
+  } catch (err: any) {
+    console.warn("Could not sync article to portal-data.json:", err.message);
+  }
+}
 
 /**
  * Extracts news image from RSS item enclosure, media tag, or html body
@@ -140,6 +175,7 @@ export interface IngestionOptions {
   userId?: string;
   maxItems?: number;
   autoDraft?: boolean;
+  autoPublish?: boolean; // TRUE: Automatically publish directly without waiting for click/approval
 }
 
 export interface IngestionStats {
@@ -148,12 +184,13 @@ export interface IngestionStats {
   fetchedCount: number;
   newDiscoveredCount: number;
   draftsGeneratedCount: number;
+  autoPublishedCount: number;
   duplicateCount: number;
   errors: string[];
 }
 
 /**
- * Executes feed ingestion for a single source with retry and duplicate protection
+ * Executes feed ingestion for a single source with retry, duplicate protection, and optional full auto-publish
  */
 export async function executeSourceIngestion(options: IngestionOptions): Promise<IngestionStats> {
   const source = await db.ingestionSource.findUnique({
@@ -170,6 +207,7 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
     fetchedCount: 0,
     newDiscoveredCount: 0,
     draftsGeneratedCount: 0,
+    autoPublishedCount: 0,
     duplicateCount: 0,
     errors: [],
   };
@@ -223,7 +261,7 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
 
   const items = parsedFeed.items || [];
   stats.fetchedCount = items.length;
-  const maxLimit = options.maxItems || 25;
+  const maxLimit = options.maxItems || 20;
   const itemsToProcess = items.slice(0, maxLimit);
 
   // Fetch recent items from the past 7 days for duplicate checking
@@ -239,6 +277,9 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
     select: { id: true, title: true, slug: true },
     take: 200,
   });
+
+  const defaultAuthor = await db.authorProfile.findFirst();
+  const authorId = defaultAuthor?.id || null;
 
   for (const item of itemsToProcess) {
     const originalLink = item.link || item.guid;
@@ -326,10 +367,11 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
       } else {
         stats.newDiscoveredCount++;
 
-        // Auto-generate AI Draft immediately if enabled
-        if (options.autoDraft !== false) {
+        // Generate Journalistic AI Draft
+        let draftResult: any = null;
+        if (options.autoDraft !== false || options.autoPublish !== false) {
           try {
-            const draftResult = await generateAiNewsDraft(createdItem.id);
+            draftResult = await generateAiNewsDraft(createdItem.id);
             await db.ingestedItem.update({
               where: { id: createdItem.id },
               data: {
@@ -356,6 +398,103 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
             console.error(`Gagal menyusun draft AI untuk '${title}':`, draftErr.message);
           }
         }
+
+        // FULL AUTO-PUBLISH (No click / approval needed)
+        const shouldAutoPublish = options.autoPublish !== false && draftResult !== null;
+        if (shouldAutoPublish && authorId) {
+          try {
+            const catName = draftResult.recommendedCategory || item.category || source.allowedCategories?.split(",")[0] || "Nasional";
+            const foundCat = await db.category.findFirst({
+              where: { name: { contains: catName, mode: "insensitive" } },
+            });
+            const targetCategoryId = foundCat?.id || (await db.category.findFirst())?.id;
+
+            if (targetCategoryId) {
+              let baseSlug = generateSlug(draftResult.headline);
+              if (!baseSlug) baseSlug = `berita-${Date.now()}`;
+              let finalSlug = baseSlug;
+              const existingSlug = await db.article.findUnique({ where: { slug: finalSlug } });
+              if (existingSlug) {
+                finalSlug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+              }
+
+              const visual = getCategoryVisual(foundCat?.slug || "nasional");
+              const finalImage = extractedImage || visual.image;
+              const readingTime = calculateReadingTime(draftResult.articleBodyHtml);
+
+              const publishedArticle = await db.article.create({
+                data: {
+                  title: draftResult.headline,
+                  slug: finalSlug,
+                  summary: draftResult.summary,
+                  content: draftResult.articleBodyHtml,
+                  categoryId: targetCategoryId,
+                  authorId: authorId,
+                  featuredImage: finalImage,
+                  imageAlt: draftResult.headline,
+                  imageCaption: `Dokumentasi siaran resmi ${source.name}`,
+                  imageCredit: source.name,
+                  readingTime,
+                  status: ArticleStatus.PUBLISHED,
+                  publishedAt: new Date(),
+                  metaTitle: draftResult.seoTitle,
+                  metaDescription: draftResult.metaDescription,
+                  canonicalUrl: `https://catatannegeri.com/${foundCat?.slug || "nasional"}/${finalSlug}`,
+                  factCheckNotes: `Diterbitkan otomatis oleh pipeline agregator media nasional resmi: ${source.name}. Mematuhi Pedoman Media Siber dan Kode Etik Jurnalistik.`,
+                  sourceReferences: JSON.stringify([
+                    {
+                      source: source.name,
+                      url: originalLink,
+                      date: item.pubDate ? new Date(item.pubDate) : new Date(),
+                      type: source.type,
+                    },
+                  ]),
+                },
+                include: { category: true, author: true },
+              });
+
+              // Attach tags
+              for (const tName of draftResult.recommendedTags || []) {
+                if (!tName) continue;
+                const tagSlug = generateSlug(tName);
+                const tagRecord = await db.tag.upsert({
+                  where: { slug: tagSlug },
+                  update: {},
+                  create: { name: tName, slug: tagSlug },
+                });
+                await db.articleTag.upsert({
+                  where: {
+                    articleId_tagId: { articleId: publishedArticle.id, tagId: tagRecord.id },
+                  },
+                  update: {},
+                  create: { articleId: publishedArticle.id, tagId: tagRecord.id },
+                });
+              }
+
+              // Update IngestedItem status to PUBLISHED
+              await db.ingestedItem.update({
+                where: { id: createdItem.id },
+                data: {
+                  status: "PUBLISHED",
+                  draftedArticleId: publishedArticle.id,
+                  editorialNotes: `Dipublikasikan otomatis secara langsung ke website: /${publishedArticle.category.slug}/${publishedArticle.slug}`,
+                },
+              });
+
+              // Sync to portal-data.json for edge / static serving
+              syncArticleToPortalData(publishedArticle);
+
+              // Auto-ping search engines
+              const fullArticleUrl = `${SITE_URL}/${publishedArticle.category.slug}/${publishedArticle.slug}`;
+              notifySearchEnginesOfNewArticle(fullArticleUrl).catch(() => {});
+
+              stats.autoPublishedCount++;
+            }
+          } catch (pubErr: any) {
+            console.error(`Gagal auto-publish '${title}':`, pubErr.message);
+            stats.errors.push(`Auto-publish error '${title}': ${pubErr.message}`);
+          }
+        }
       }
     } catch (saveErr: any) {
       if (!saveErr.message.includes("Unique constraint")) {
@@ -377,7 +516,7 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
   // Log audit event
   await logAuditEvent({
     userId: options.userId || null,
-    action: "NEWS_SOURCE_SYNC",
+    action: "NEWS_SOURCE_SYNC_AUTOPUBLISH",
     entityType: "IngestionSource",
     entityId: source.id,
     details: stats,
@@ -387,17 +526,19 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
 }
 
 /**
- * Ingests all active national news sources concurrently or in controlled sequence
+ * Ingests all active national news sources concurrently or in controlled sequence with full auto-publish
  */
 export async function executeAllSourcesIngestion(options?: {
   userId?: string;
   maxItemsPerSource?: number;
   autoDraft?: boolean;
+  autoPublish?: boolean; // Defaults to true
 }): Promise<{
   totalSources: number;
   totalFetched: number;
   totalNewDiscovered: number;
   totalDraftsGenerated: number;
+  totalAutoPublished: number;
   totalDuplicates: number;
   sourceResults: IngestionStats[];
 }> {
@@ -410,6 +551,7 @@ export async function executeAllSourcesIngestion(options?: {
   let totalFetched = 0;
   let totalNewDiscovered = 0;
   let totalDraftsGenerated = 0;
+  let totalAutoPublished = 0;
   let totalDuplicates = 0;
 
   for (const source of sources) {
@@ -419,12 +561,14 @@ export async function executeAllSourcesIngestion(options?: {
         userId: options?.userId,
         maxItems: options?.maxItemsPerSource || 15,
         autoDraft: options?.autoDraft !== false,
+        autoPublish: options?.autoPublish !== false, // Defaults to TRUE for full auto-publish
       });
 
       sourceResults.push(stats);
       totalFetched += stats.fetchedCount;
       totalNewDiscovered += stats.newDiscoveredCount;
       totalDraftsGenerated += stats.draftsGeneratedCount;
+      totalAutoPublished += stats.autoPublishedCount;
       totalDuplicates += stats.duplicateCount;
     } catch (err: any) {
       sourceResults.push({
@@ -433,6 +577,7 @@ export async function executeAllSourcesIngestion(options?: {
         fetchedCount: 0,
         newDiscoveredCount: 0,
         draftsGeneratedCount: 0,
+        autoPublishedCount: 0,
         duplicateCount: 0,
         errors: [err.message || "Gagal memproses sumber"],
       });
@@ -444,6 +589,7 @@ export async function executeAllSourcesIngestion(options?: {
     totalFetched,
     totalNewDiscovered,
     totalDraftsGenerated,
+    totalAutoPublished,
     totalDuplicates,
     sourceResults,
   };

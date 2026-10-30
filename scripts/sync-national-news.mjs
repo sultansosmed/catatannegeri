@@ -6,7 +6,31 @@ import path from "path";
 
 const prisma = new PrismaClient();
 
+const CATEGORY_VISUALS = {
+  nasional: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=1200&q=80",
+  daerah: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80",
+  politik: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=80",
+  ekonomi: "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1200&q=80",
+  bisnis: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80",
+  teknologi: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
+  gadget: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80",
+  otomotif: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80",
+  pendidikan: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+  kesehatan: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
+  "gaya-hidup": "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80",
+  hiburan: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80",
+  olahraga: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80",
+  travel: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+  kuliner: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
+  properti: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+  keuangan: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
+  "tips-dan-panduan": "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1200&q=80",
+  lingkungan: "https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80",
+  "tren-dan-viral": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+};
+
 const rssParser = new Parser({
+  timeout: 12000,
   customFields: {
     item: [
       ["media:content", "mediaContent", { keepArray: false }],
@@ -20,6 +44,20 @@ const rssParser = new Parser({
     ],
   },
 });
+
+function generateSlug(text) {
+  return (text || "")
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/--+/g, "-")
+    .trim();
+}
+
+function calculateReadingTime(text) {
+  const words = (text || "").replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
 
 function normalizeCanonicalUrl(rawUrl) {
   try {
@@ -102,6 +140,31 @@ function detectHighImpactTopic(title, content) {
   return highImpactKeywords.some((keyword) => text.includes(keyword));
 }
 
+function syncArticleToPortalData(article) {
+  try {
+    const portalDataPath = path.join(process.cwd(), "src", "data", "portal-data.json");
+    if (fs.existsSync(portalDataPath)) {
+      const data = JSON.parse(fs.readFileSync(portalDataPath, "utf8"));
+      if (Array.isArray(data.articles)) {
+        const idx = data.articles.findIndex((a) => a.id === article.id || a.slug === article.slug);
+        const articleJson = {
+          ...article,
+          category: article.category ? { id: article.category.id, name: article.category.name, slug: article.category.slug } : undefined,
+          author: article.author ? { id: article.author.id, displayName: article.author.displayName } : undefined,
+        };
+        if (idx >= 0) {
+          data.articles[idx] = { ...data.articles[idx], ...articleJson };
+        } else {
+          data.articles.unshift(articleJson);
+        }
+        fs.writeFileSync(portalDataPath, JSON.stringify(data, null, 2), "utf8");
+      }
+    }
+  } catch (err) {
+    console.warn("Could not sync article to portal-data.json:", err.message);
+  }
+}
+
 function generateJournalisticDraft({ item, sourceName, extractedImage, recentArticles }) {
   const cleanSourceText = (item.rawContent || item.excerpt || item.title)
     .replace(/<[^>]*>/g, " ")
@@ -170,7 +233,7 @@ function generateJournalisticDraft({ item, sourceName, extractedImage, recentArt
     : "";
 
   const draftBody = `
-<p><strong>JAKARTA, CATATANNEGERI.COM</strong> — Perkembangan terkini mengenai <strong>${baseTitle.toLowerCase()}</strong> resmi menjadi perhatian luas setelah dokumen keterangan resmi dipublikasikan oleh <em>${sourceName}</em> pada ${originalPubTime}. Kebijakan dan dinamika ini memicu respons beragam dari para pemangku kepentingan, pengamat kebijakan publik, serta masyarakat yang terdampak secara langsung di berbagai wilayah Indonesia.</p>
+<p><strong>JAKARTA, CATATANNEGERI.COM</strong> — Perkembangan terkini mengenai <strong>${baseTitle.toLowerCase()}</strong> resmi menjadi perhatian luas publik nasional menyusul penerbitan keterangan pers resmi oleh <em>${sourceName}</em> pada ${originalPubTime}. Dinamika ini memicu respons beragam dari para pemangku kepentingan, pengamat kebijakan publik, serta masyarakat luas di berbagai wilayah Indonesia.</p>
 
 <p>Isu ini tidak hanya mencerminkan dinamika sektoral semata, melainkan juga menguji konsistensi tata kelola kelembagaan, kepatuhan regulasi, serta transparansi komunikasi publik dari instansi terkait. Dalam lanskap informasi digital saat ini, pemahaman yang utuh dan berimbang sangat dibutuhkan agar masyarakat memperoleh kejelasan tanpa terjebak dalam spekulasi yang belum terverifikasi.</p>
 
@@ -236,7 +299,7 @@ Masyarakat diimbau untuk selalu merujuk pada kanal komunikasi resmi pemerintah, 
 <h2>Kesimpulan dan Komitmen Redaksi Catatan Negeri</h2>
 <p>Perkembangan mengenai <strong>${baseTitle}</strong> merupakan babak penting dalam penguatan tata kelola di tanah air. Kunci keberhasilan dari inisiatif ini terletak pada konsistensi penegakan hukum di lapangan, transparansi hasil evaluasi berkala, serta kemauan pemerintah untuk mendengarkan masukan konstruktif dari masyarakat madani.</p>
 
-<p><em>Redaksi Catatan Negeri memegang teguh Kode Etik Jurnalistik dan Pedoman Pemberitaan Media Siber. Laporan ini disusun secara independen berdasarkan dokumen resmi ${sourceName}. Apabila terdapat informasi baru, sanggahan pihak terkait, atau data ralat, redaksi akan menyajikan pembaruan secara terbuka dan berimbang demi melayani hak publik atas kebenaran.</em></p>
+<p><em>Redaksi Catatan Negeri memegang teguh Kode Etik Jurnalistik dan Pedoman Pemberitaan Media Siber. Laporan ini disusun secara independen berdasarkan rilis resmi ${sourceName}. Apabila terdapat informasi baru, sanggahan pihak terkait, atau data ralat, redaksi akan menyajikan pembaruan secara terbuka dan berimbang demi melayani hak publik atas kebenaran.</em></p>
   `.trim();
 
   const cleanBodyText = draftBody.replace(/<[^>]*>/g, " ").trim();
@@ -285,9 +348,10 @@ Masyarakat diimbau untuk selalu merujuk pada kanal komunikasi resmi pemerintah, 
   };
 }
 
-async function syncNationalNews() {
+async function syncAndAutoPublishNationalNews() {
   console.log("==================================================================");
-  console.log("🚀 SINKRONISASI BERITA MEDIA NASIONAL (SEMI-OTOMATIS CATATAN NEGERI)");
+  console.log("⚡ FULL AUTO-PILOT: AGREGASI & PUBLIKASI OTOMATIS BERITA NASIONAL");
+  console.log("   (Tanpa Klik / Tanpa Persetujuan Manual - Langsung Terbit)");
   console.log("==================================================================");
 
   const sources = await prisma.ingestionSource.findMany({
@@ -295,24 +359,30 @@ async function syncNationalNews() {
     orderBy: { name: "asc" },
   });
 
-  console.log(`📡 Memeriksa ${sources.length} sumber media nasional terdaftar...\n`);
+  const defaultAuthor = await prisma.authorProfile.findFirst();
+  if (!defaultAuthor) {
+    console.error("❌ Profil redaksi default tidak ditemukan di database.");
+    return;
+  }
+
+  console.log(`📡 Memeriksa ${sources.length} saluran media arus utama...\n`);
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const existingRecentItems = await prisma.ingestedItem.findMany({
     where: { discoveredAt: { gte: sevenDaysAgo } },
     select: { id: true, title: true, canonicalUrl: true, originalUrl: true },
-    take: 400,
+    take: 500,
   });
 
   const existingRecentArticles = await prisma.article.findMany({
     where: { createdAt: { gte: sevenDaysAgo } },
     select: { id: true, title: true, slug: true, category: { select: { slug: true } } },
-    take: 200,
+    take: 300,
   });
 
   let grandTotalFetched = 0;
   let grandTotalNew = 0;
-  let grandTotalDrafts = 0;
+  let grandTotalPublished = 0;
   let grandTotalDuplicates = 0;
 
   for (const source of sources) {
@@ -333,10 +403,10 @@ async function syncNationalNews() {
     grandTotalFetched += items.length;
     let newInSource = 0;
     let dupInSource = 0;
-    let draftInSource = 0;
+    let publishedInSource = 0;
 
-    // Process top 10 items per source
-    const itemsToProcess = items.slice(0, 10);
+    // Process top 5 freshest items per source in this run
+    const itemsToProcess = items.slice(0, 5);
 
     for (const item of itemsToProcess) {
       const originalLink = item.link || item.guid;
@@ -345,7 +415,7 @@ async function syncNationalNews() {
 
       const canonicalUrl = normalizeCanonicalUrl(originalLink);
 
-      // Check URL duplicate
+      // 1. Check exact URL duplicate
       const exact = await prisma.ingestedItem.findFirst({
         where: {
           OR: [{ originalUrl: originalLink }, { canonicalUrl: canonicalUrl }],
@@ -358,7 +428,7 @@ async function syncNationalNews() {
         continue;
       }
 
-      // Check title similarity
+      // 2. Check title similarity
       let isDuplicate = false;
       let duplicateReason = null;
       let duplicateScore = 0;
@@ -417,43 +487,109 @@ async function syncNationalNews() {
           newInSource++;
           grandTotalNew++;
 
-          // Auto-generate AI draft
-          try {
-            const draft = generateJournalisticDraft({
-              item: created,
-              sourceName: source.name,
-              extractedImage,
-              recentArticles: existingRecentArticles,
-            });
+          // Compose AI Journalist Draft
+          const draft = generateJournalisticDraft({
+            item: created,
+            sourceName: source.name,
+            extractedImage,
+            recentArticles: existingRecentArticles,
+          });
 
-            await prisma.ingestedItem.update({
-              where: { id: created.id },
-              data: {
-                status: "DRAFT_GENERATED",
-                aiDraftTitle: draft.headline,
-                aiDraftAlternativeTitles: JSON.stringify(draft.alternativeHeadlines),
-                aiDraftSummary: draft.summary,
-                aiDraftOutline: draft.outline,
-                aiDraftContent: draft.articleBodyHtml,
-                aiRecommendedCategory: draft.recommendedCategory,
-                aiRecommendedTags: JSON.stringify(draft.recommendedTags),
-                aiMetaTitle: draft.seoTitle,
-                aiMetaDescription: draft.metaDescription,
-                aiSuggestedInternalLinks: JSON.stringify(draft.internalLinkSuggestions),
-                aiVerificationClaims: JSON.stringify(draft.verificationClaims),
-                aiQualityAudit: JSON.stringify(draft.qualityAudit),
+          // DIRECT AUTOMATIC PUBLISHING (100% Autopilot)
+          const catName = draft.recommendedCategory || created.detectedCategory || "Nasional";
+          const cat = (await prisma.category.findFirst({
+            where: { name: { contains: catName, mode: "insensitive" } },
+          })) || (await prisma.category.findFirst());
+
+          const baseSlug = generateSlug(draft.headline) || `berita-${Date.now()}`;
+          let finalSlug = baseSlug;
+          const exists = await prisma.article.findUnique({ where: { slug: finalSlug } });
+          if (exists) finalSlug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+
+          const fallbackImage = CATEGORY_VISUALS[cat?.slug] || CATEGORY_VISUALS["nasional"];
+          const finalImage = extractedImage || fallbackImage;
+          const readingTime = calculateReadingTime(draft.articleBodyHtml);
+
+          const publishedArticle = await prisma.article.create({
+            data: {
+              title: draft.headline,
+              slug: finalSlug,
+              summary: draft.summary,
+              content: draft.articleBodyHtml,
+              categoryId: cat.id,
+              authorId: defaultAuthor.id,
+              featuredImage: finalImage,
+              imageAlt: draft.headline,
+              imageCaption: `Dokumentasi siaran rilis ${source.name}`,
+              imageCredit: source.name,
+              readingTime,
+              status: "PUBLISHED",
+              publishedAt: new Date(),
+              metaTitle: draft.seoTitle,
+              metaDescription: draft.metaDescription,
+              canonicalUrl: `https://catatannegeri.com/${cat.slug}/${finalSlug}`,
+              factCheckNotes: `Diterbitkan otomatis dari saluran rilis media nasional ${source.name}. Mematuhi Pedoman Media Siber dan Kode Etik Jurnalistik.`,
+              sourceReferences: JSON.stringify([
+                {
+                  source: source.name,
+                  url: originalLink,
+                  date: item.pubDate ? new Date(item.pubDate) : new Date(),
+                  type: source.type,
+                },
+              ]),
+            },
+            include: { category: true, author: true },
+          });
+
+          // Connect tags
+          for (const tName of draft.recommendedTags || []) {
+            if (!tName) continue;
+            const tagSlug = generateSlug(tName);
+            const tagRecord = await prisma.tag.upsert({
+              where: { slug: tagSlug },
+              update: {},
+              create: { name: tName, slug: tagSlug },
+            });
+            await prisma.articleTag.upsert({
+              where: {
+                articleId_tagId: { articleId: publishedArticle.id, tagId: tagRecord.id },
               },
+              update: {},
+              create: { articleId: publishedArticle.id, tagId: tagRecord.id },
             });
-
-            draftInSource++;
-            grandTotalDrafts++;
-          } catch (dErr) {
-            console.error(`\n    ⚠️ Gagal auto-draft ${title}: ${dErr.message}`);
           }
+
+          // Update IngestedItem status to PUBLISHED
+          await prisma.ingestedItem.update({
+            where: { id: created.id },
+            data: {
+              status: "PUBLISHED",
+              draftedArticleId: publishedArticle.id,
+              aiDraftTitle: draft.headline,
+              aiDraftAlternativeTitles: JSON.stringify(draft.alternativeHeadlines),
+              aiDraftSummary: draft.summary,
+              aiDraftOutline: draft.outline,
+              aiDraftContent: draft.articleBodyHtml,
+              aiRecommendedCategory: draft.recommendedCategory,
+              aiRecommendedTags: JSON.stringify(draft.recommendedTags),
+              aiMetaTitle: draft.seoTitle,
+              aiMetaDescription: draft.metaDescription,
+              aiSuggestedInternalLinks: JSON.stringify(draft.internalLinkSuggestions),
+              aiVerificationClaims: JSON.stringify(draft.verificationClaims),
+              aiQualityAudit: JSON.stringify(draft.qualityAudit),
+              editorialNotes: `Dipublikasikan otomatis secara langsung ke website: /${publishedArticle.category.slug}/${publishedArticle.slug}`,
+            },
+          });
+
+          // Sync to portal-data.json
+          syncArticleToPortalData(publishedArticle);
+
+          publishedInSource++;
+          grandTotalPublished++;
         }
       } catch (saveErr) {
         if (!saveErr.message.includes("Unique constraint")) {
-          console.error(`\n    ⚠️ Gagal simpan: ${saveErr.message}`);
+          console.error(`\n    ⚠️ Gagal proses '${title}': ${saveErr.message}`);
         }
       }
     }
@@ -467,24 +603,23 @@ async function syncNationalNews() {
       },
     });
 
-    console.log(`✓ Fetched: ${items.length} | Baru: ${newInSource} | Draf AI: ${draftInSource} | Duplikasi: ${dupInSource}`);
+    console.log(`✓ Fetched: ${items.length} | Baru Masuk: ${newInSource} | ⚡ Langsung Terbit: ${publishedInSource} | Duplikasi: ${dupInSource}`);
   }
 
   console.log("\n==================================================================");
-  console.log("📊 RINGKASAN HASIL PENGAMBILAN BERITA NASIONAL:");
-  console.log(`   - Total Berita Ditarik       : ${grandTotalFetched}`);
-  console.log(`   - Berita Baru Masuk          : ${grandTotalNew}`);
-  console.log(`   - Draf Jurnalisme AI Disusun : ${grandTotalDrafts}`);
-  console.log(`   - Duplikasi Tersaring        : ${grandTotalDuplicates}`);
+  console.log("🎉 RINGKASAN EKSEKUSI AUTO-PILOT:");
+  console.log(`   - Total Berita Ditarik           : ${grandTotalFetched}`);
+  console.log(`   - Berita Baru                    : ${grandTotalNew}`);
+  console.log(`   - ⚡ Artikel Langsung Diterbitkan : ${grandTotalPublished} (100% Otomatis)`);
+  console.log(`   - Duplikasi Tersaring            : ${grandTotalDuplicates}`);
   console.log("==================================================================");
-  console.log("💡 Semua draf berita siap ditinjau dan diterbitkan di Admin Newsroom:");
-  console.log("   👉 URL: /admin/news-inbox");
+  console.log("✅ Semua artikel baru telah terbit dan aktif di website CatatanNegeri.com.");
   console.log("==================================================================\n");
 }
 
-syncNationalNews()
+syncAndAutoPublishNationalNews()
   .catch((err) => {
-    console.error("Kesalahan fatal sinkronisasi berita nasional:", err);
+    console.error("Kesalahan fatal auto-publish nasional:", err);
     process.exit(1);
   })
   .finally(async () => {

@@ -22,6 +22,7 @@ import {
   ShieldAlert,
   ArrowRight,
   HelpCircle,
+  Zap,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -65,6 +66,7 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
   const [highImpactOnly, setHighImpactOnly] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [isSyncingNational, setIsSyncingNational] = useState<boolean>(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ text: string; isError?: boolean } | null>(null);
 
@@ -131,6 +133,55 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
     }
   };
 
+  const handleSyncNationalNews = async () => {
+    setIsSyncingNational(true);
+    setFeedback(null);
+    try {
+      const res = await fetch("/api/ingestion/sync-all?limit=10&autoDraft=true", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal sinkronisasi berita nasional.");
+
+      setFeedback({
+        text: `🎉 Berhasil! Diproses ${data.totalSources} sumber media nasional (Antara, CNN, CNBC, Tempo, Republika). Ditemukan ${data.totalNewDiscovered} berita baru, ${data.totalDraftsGenerated} draft AI tersusun siap terbit.`,
+      });
+      await refreshItems();
+      router.refresh();
+    } catch (err: any) {
+      setFeedback({ text: err.message || "Gagal sinkronisasi berita nasional.", isError: true });
+    } finally {
+      setIsSyncingNational(false);
+    }
+  };
+
+  const handleQuickPublish = async (e: React.MouseEvent, item: IngestedItemSummary) => {
+    e.stopPropagation();
+    setActionLoading(`pub-${item.id}`);
+    setFeedback(null);
+    try {
+      const res = await fetch(`/api/news-inbox/${item.id}/review`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "APPROVE_AND_PUBLISH",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal menerbitkan artikel.");
+
+      setFeedback({
+        text: `✅ Sukses! Berita berhasil diterbitkan langsung: "${data.article?.title || item.title}". Kunjungi: ${data.articleUrl}`,
+      });
+      await refreshItems();
+      router.refresh();
+    } catch (err: any) {
+      setFeedback({ text: err.message || "Gagal menerbitkan.", isError: true });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleBatchAction = async (action: "MARK_READY_AI" | "DISMISS_DUPLICATES") => {
     if (selectedIds.length === 0) return;
     setActionLoading(action);
@@ -169,7 +220,7 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
       if (!res.ok) throw new Error(data.error || "Gagal membuat draf AI.");
 
       setFeedback({
-        text: "Draf jurnalisme AI berhasil disusun! Anda dapat meninjaunya di Studio Review.",
+        text: "Draf jurnalisme AI berhasil disusun! Anda dapat meninjaunya atau langsung menerbitkannya.",
       });
       await refreshItems();
       router.refresh();
@@ -257,7 +308,7 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
         </div>
       )}
 
-      {/* Filter and Search Bar */}
+      {/* Filter, Actions, and Search Bar */}
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-4">
         {/* Status Tabs */}
         <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-100 pb-3">
@@ -333,11 +384,22 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
           </div>
 
           <div className="flex items-center gap-2">
+            {/* National Media Sync Button */}
+            <button
+              onClick={handleSyncNationalNews}
+              disabled={isSyncingNational}
+              className="px-3.5 py-1.5 bg-brand-red hover:bg-red-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
+              title="Tarik berita terbaru dari Antara, CNN, CNBC, Tempo, Republika"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingNational ? "animate-spin" : ""}`} />
+              <span>{isSyncingNational ? "Mengambil Berita Nasional..." : "Tarik Berita Nasional"}</span>
+            </button>
+
             <button
               onClick={refreshItems}
               disabled={isRefreshing}
               className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
-              title="Segarkan data"
+              title="Segarkan daftar"
             >
               <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-brand-red" : ""}`} />
             </button>
@@ -407,8 +469,8 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
                   <td colSpan={6} className="text-center py-12 text-slate-400">
                     <Inbox className="w-10 h-10 mx-auto mb-2 opacity-40" />
                     <p className="font-semibold text-slate-600">Tidak ada berita ditemukan</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
-                      Coba ubah filter status atau periksa jadwal pengambilan sumber berita eksternal.
+                    <p className="text-[11px] text-slate-400 mt-1 max-w-sm mx-auto">
+                      Klik tombol <strong>"Tarik Berita Nasional"</strong> di atas untuk mengambil berita terbaru secara semi otomatis.
                     </p>
                   </td>
                 </tr>
@@ -416,6 +478,7 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
                 filteredItems.map((item) => {
                   const isSelected = selectedIds.includes(item.id);
                   const isGeneratingAi = actionLoading === `ai-${item.id}`;
+                  const isPublishing = actionLoading === `pub-${item.id}`;
 
                   return (
                     <tr
@@ -507,20 +570,29 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
 
                       <td className="p-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
-                          {/* AI Draft Button */}
-                          {item.status !== "PUBLISHED" && (
+                          {/* 1-Click Quick Publish Button */}
+                          {item.status !== "PUBLISHED" && item.status !== "DUPLICATE" && (
+                            <button
+                              onClick={(e) => handleQuickPublish(e, item)}
+                              disabled={isPublishing}
+                              className="px-2.5 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold flex items-center gap-1 transition-colors shadow-xs"
+                              title="Setujui dan terbitkan langsung ke portal website (1-klik)"
+                            >
+                              <CheckCircle className={`w-3.5 h-3.5 ${isPublishing ? "animate-spin" : ""}`} />
+                              <span>{isPublishing ? "Menerbitkan..." : "Terbitkan"}</span>
+                            </button>
+                          )}
+
+                          {/* AI Draft Button if not generated yet */}
+                          {item.status !== "PUBLISHED" && !item.aiDraftTitle && item.status !== "DUPLICATE" && (
                             <button
                               onClick={(e) => handleGenerateAiDraftSingle(e, item.id)}
                               disabled={isGeneratingAi}
-                              className={`px-2.5 py-1.5 rounded text-[11px] font-bold flex items-center gap-1 transition-colors ${
-                                item.aiDraftTitle
-                                  ? "bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100"
-                                  : "bg-slate-100 text-slate-700 hover:bg-purple-600 hover:text-white"
-                              }`}
-                              title={item.aiDraftTitle ? "Buat ulang draf AI" : "Susun draf jurnalisme AI"}
+                              className="px-2.5 py-1.5 rounded text-[11px] font-bold flex items-center gap-1 transition-colors bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100"
+                              title="Susun draf jurnalisme AI 1.200 kata"
                             >
                               <Sparkles className={`w-3.5 h-3.5 ${isGeneratingAi ? "animate-spin" : ""}`} />
-                              <span>{isGeneratingAi ? "Memproses..." : item.aiDraftTitle ? "Draf Siap" : "Draf AI"}</span>
+                              <span>{isGeneratingAi ? "Menyusun..." : "Draf AI"}</span>
                             </button>
                           )}
 
@@ -528,6 +600,7 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
                           <Link
                             href={`/admin/news-inbox/${item.id}`}
                             className="px-2.5 py-1.5 rounded bg-brand-navy hover:bg-brand-navy/90 text-white text-[11px] font-bold flex items-center gap-1 transition-colors"
+                            title="Buka studio telaah dan sunting naskah"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>Tinjau</span>
@@ -545,4 +618,3 @@ export function NewsInboxManager({ initialItems, sources }: NewsInboxManagerProp
     </div>
   );
 }
-

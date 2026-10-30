@@ -3,12 +3,60 @@ import { URL } from "url";
 import { db } from "./db";
 import { safeFetchText } from "./network-safety";
 import { logAuditEvent } from "./audit";
+import { generateAiNewsDraft } from "./ai-news-draft";
 
 const rssParser = new Parser({
   customFields: {
-    item: ["description", "content:encoded", "category", "dc:creator", "pubDate"],
+    item: [
+      ["media:content", "mediaContent", { keepArray: false }],
+      ["media:thumbnail", "mediaThumbnail", { keepArray: false }],
+      ["enclosure", "enclosure"],
+      "description",
+      "content:encoded",
+      "category",
+      "dc:creator",
+      "pubDate",
+    ],
   },
 });
+
+/**
+ * Extracts news image from RSS item enclosure, media tag, or html body
+ */
+export function extractFeedItemImage(item: any): string | null {
+  // 1. Enclosure tag check
+  if (item.enclosure && item.enclosure.url) {
+    let url = String(item.enclosure.url).trim();
+    if (url.startsWith("http")) {
+      // Upgrade Detik/CNN/CNBC thumbnail to higher resolution
+      if (url.includes("detik.net.id") && url.includes("w=360")) {
+        url = url.replace("w=360", "w=750");
+      }
+      return url;
+    }
+  }
+
+  // 2. Media:content
+  if (item.mediaContent && item.mediaContent.$ && item.mediaContent.$.url) {
+    const url = String(item.mediaContent.$.url).trim();
+    if (url.startsWith("http")) return url;
+  }
+
+  // 3. Media:thumbnail
+  if (item.mediaThumbnail && item.mediaThumbnail.$ && item.mediaThumbnail.$.url) {
+    const url = String(item.mediaThumbnail.$.url).trim();
+    if (url.startsWith("http")) return url;
+  }
+
+  // 4. HTML img tag in content:encoded or description
+  const htmlContent = (item["content:encoded"] || item.content || item.description || "") as string;
+  const match = htmlContent.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (match && match[1] && match[1].startsWith("http")) {
+    return match[1];
+  }
+
+  return null;
+}
 
 /**
  * Normalizes an incoming URL into its canonical form
@@ -91,6 +139,7 @@ export interface IngestionOptions {
   sourceId: string;
   userId?: string;
   maxItems?: number;
+  autoDraft?: boolean;
 }
 
 export interface IngestionStats {
@@ -98,6 +147,7 @@ export interface IngestionStats {
   sourceName: string;
   fetchedCount: number;
   newDiscoveredCount: number;
+  draftsGeneratedCount: number;
   duplicateCount: number;
   errors: string[];
 }
@@ -119,6 +169,7 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
     sourceName: source.name,
     fetchedCount: 0,
     newDiscoveredCount: 0,
+    draftsGeneratedCount: 0,
     duplicateCount: 0,
     errors: [],
   };
@@ -172,7 +223,7 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
 
   const items = parsedFeed.items || [];
   stats.fetchedCount = items.length;
-  const maxLimit = options.maxItems || 40;
+  const maxLimit = options.maxItems || 25;
   const itemsToProcess = items.slice(0, maxLimit);
 
   // Fetch recent items from the past 7 days for duplicate checking
@@ -245,11 +296,12 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
     const excerpt = item.description || (rawContent ? rawContent.replace(/<[^>]*>/g, " ").slice(0, 300) : "");
     const author = item["dc:creator"] || item.author || null;
     const isHighImpact = detectHighImpactTopic(title, rawContent);
+    const extractedImage = extractFeedItemImage(item);
 
     const initialStatus = isDuplicate ? "DUPLICATE" : "READY_FOR_AI_DRAFT";
 
     try {
-      await db.ingestedItem.create({
+      const createdItem = await db.ingestedItem.create({
         data: {
           sourceId: source.id,
           originalUrl: originalLink,
@@ -273,9 +325,39 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
         stats.duplicateCount++;
       } else {
         stats.newDiscoveredCount++;
+
+        // Auto-generate AI Draft immediately if enabled
+        if (options.autoDraft !== false) {
+          try {
+            const draftResult = await generateAiNewsDraft(createdItem.id);
+            await db.ingestedItem.update({
+              where: { id: createdItem.id },
+              data: {
+                status: "DRAFT_GENERATED",
+                aiDraftTitle: draftResult.headline,
+                aiDraftAlternativeTitles: JSON.stringify(draftResult.alternativeHeadlines),
+                aiDraftSummary: draftResult.summary,
+                aiDraftOutline: draftResult.outline,
+                aiDraftContent: draftResult.articleBodyHtml,
+                aiRecommendedCategory: draftResult.recommendedCategory,
+                aiRecommendedTags: JSON.stringify(draftResult.recommendedTags),
+                aiMetaTitle: draftResult.seoTitle,
+                aiMetaDescription: draftResult.metaDescription,
+                aiSuggestedInternalLinks: JSON.stringify(draftResult.internalLinkSuggestions),
+                aiVerificationClaims: JSON.stringify(draftResult.verificationClaims),
+                aiQualityAudit: JSON.stringify({
+                  ...draftResult.qualityAudit,
+                  extractedImageUrl: extractedImage,
+                }),
+              },
+            });
+            stats.draftsGeneratedCount++;
+          } catch (draftErr: any) {
+            console.error(`Gagal menyusun draft AI untuk '${title}':`, draftErr.message);
+          }
+        }
       }
     } catch (saveErr: any) {
-      // Ignore unique constraint race conditions
       if (!saveErr.message.includes("Unique constraint")) {
         stats.errors.push(`Gagal menyimpan '${title}': ${saveErr.message}`);
       }
@@ -304,3 +386,65 @@ export async function executeSourceIngestion(options: IngestionOptions): Promise
   return stats;
 }
 
+/**
+ * Ingests all active national news sources concurrently or in controlled sequence
+ */
+export async function executeAllSourcesIngestion(options?: {
+  userId?: string;
+  maxItemsPerSource?: number;
+  autoDraft?: boolean;
+}): Promise<{
+  totalSources: number;
+  totalFetched: number;
+  totalNewDiscovered: number;
+  totalDraftsGenerated: number;
+  totalDuplicates: number;
+  sourceResults: IngestionStats[];
+}> {
+  const sources = await db.ingestionSource.findMany({
+    where: { isActive: true },
+    orderBy: { name: "asc" },
+  });
+
+  const sourceResults: IngestionStats[] = [];
+  let totalFetched = 0;
+  let totalNewDiscovered = 0;
+  let totalDraftsGenerated = 0;
+  let totalDuplicates = 0;
+
+  for (const source of sources) {
+    try {
+      const stats = await executeSourceIngestion({
+        sourceId: source.id,
+        userId: options?.userId,
+        maxItems: options?.maxItemsPerSource || 15,
+        autoDraft: options?.autoDraft !== false,
+      });
+
+      sourceResults.push(stats);
+      totalFetched += stats.fetchedCount;
+      totalNewDiscovered += stats.newDiscoveredCount;
+      totalDraftsGenerated += stats.draftsGeneratedCount;
+      totalDuplicates += stats.duplicateCount;
+    } catch (err: any) {
+      sourceResults.push({
+        sourceId: source.id,
+        sourceName: source.name,
+        fetchedCount: 0,
+        newDiscoveredCount: 0,
+        draftsGeneratedCount: 0,
+        duplicateCount: 0,
+        errors: [err.message || "Gagal memproses sumber"],
+      });
+    }
+  }
+
+  return {
+    totalSources: sources.length,
+    totalFetched,
+    totalNewDiscovered,
+    totalDraftsGenerated,
+    totalDuplicates,
+    sourceResults,
+  };
+}

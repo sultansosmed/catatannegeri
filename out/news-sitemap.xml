@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
+    <loc>https://catatannegeri.com/ekonomi/rupiah-menguat-jadi-rp-18120-per-dolar-as-9127</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Catatan Negeri</news:name>
+        <news:language>id</news:language>
+      </news:publication>
+      <news:publication_date>2026-10-30T11:14:29.127Z</news:publication_date>
+      <news:title><![CDATA[Rupiah Menguat Jadi Rp 18.120 per Dolar AS]]></news:title>
+    </news:news>
+  </url>
+  <url>
     <loc>https://catatannegeri.com/daerah/pembangunan-infrastruktur-konektivitas-daerah-keadilan-logistik</loc>
     <news:news>
       <news:publication>
@@ -207,17 +218,6 @@
       </news:publication>
       <news:publication_date>2026-10-19T17:17:23.495Z</news:publication_date>
       <news:title><![CDATA[Pembinaan Atlet Usia Dini dan Fasilitas Bertaraf Internasional: Menatap Prestasi Global Merah Putih]]></news:title>
-    </news:news>
-  </url>
-  <url>
-    <loc>https://catatannegeri.com/nasional/transformasi-layanan-publik-digital-nasional-akselerasi-integrasi-data-dan-dampak-nyata-bagi-masyarakat</loc>
-    <news:news>
-      <news:publication>
-        <news:name>Catatan Negeri</news:name>
-        <news:language>id</news:language>
-      </news:publication>
-      <news:publication_date>2026-10-21T14:17:23.129Z</news:publication_date>
-      <news:title><![CDATA[Transformasi Layanan Publik Digital Nasional: Akselerasi Integrasi Data dan Dampak Nyata bagi Masyarakat]]></news:title>
     </news:news>
   </url>
 </urlset>

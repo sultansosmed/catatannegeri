@@ -11,6 +11,8 @@
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node scripts/seed.mjs",
+    "sources:seed": "node scripts/seed-national-sources.mjs",
+    "news:sync": "node scripts/sync-national-news.mjs",
     "admin:setup": "node scripts/setup-admin.mjs"
   },
   "dependencies": {

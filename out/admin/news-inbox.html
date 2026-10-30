@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kotak Masuk Berita — Portal Redaksi Catatan Negeri</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <link rel="icon" href="/brand/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0f172a',
+              red: '#b91c1c',
+              'red-dark': '#991b1b',
+              'red-light': '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    (function() {
+      var user = localStorage.getItem('cn_user');
+      var hasCookie = document.cookie.indexOf('cn_session') !== -1;
+      if (!user && !hasCookie) {
+        window.location.replace('/admin/login');
+      }
+    })();
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 min-h-screen border-r border-slate-800">
+    <!-- Brand -->
+    <div class="h-16 flex items-center px-6 border-b border-slate-800/80 bg-slate-950/40">
+      <a href="/admin" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded bg-brand-red flex items-center justify-center p-1">
+          <img src="/brand/logo.png" alt="Logo" class="w-7 h-7 object-contain">
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-sm tracking-tight text-white">CATATAN<span class="text-brand-red-light">NEGERI</span></span>
+          <span class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Portal Redaksi</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-3 py-4 space-y-1 text-xs">
+      <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/news-inbox" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors bg-brand-red text-white font-bold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+        <span class="flex-1">Kotak Masuk Berita</span>
+        <span class="px-1.5 py-0.2 rounded text-[10px] bg-red-600 text-white font-bold">Auto</span>
+      </a>
+      <a href="/admin/news-sources" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+        <span>Sumber Berita (15)</span>
+      </a>
+      <a href="/admin/articles" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+        <span>Manajemen Artikel</span>
+      </a>
+      <a href="/admin/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+        <span>Kanal Kategori (20)</span>
+      </a>
+      <a href="/admin/tags" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+        <span>Topik & Tag</span>
+      </a>
+      <a href="/admin/media" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span>Pustaka Media</span>
+      </a>
+      <a href="/admin/seo" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors hover:bg-slate-800 text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <span>Technical SEO</span>
+      </a>
+
+      <div class="pt-4 mt-4 border-t border-slate-800">
+        <a href="/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          <span>Lihat Situs Publik</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- User Profile & Logout -->
+    <div class="p-3 border-t border-slate-800 bg-slate-950/60">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-8 h-8 rounded-full bg-brand-red text-white font-bold flex items-center justify-center text-xs flex-shrink-0" id="userAvatar">RN</div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-white truncate" id="userNameDisplay">Tim Redaksi</p>
+            <p class="text-[10px] text-slate-400 truncate" id="userRoleDisplay">SUPER_ADMIN</p>
+          </div>
+        </div>
+        <button onclick="handleLogout()" class="p-1.5 text-slate-400 hover:text-red-400 rounded hover:bg-slate-800 transition-colors" title="Keluar">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- Topbar -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
+      <div>
+        <h1 class="font-serif font-bold text-lg text-brand-navy">Kotak Masuk Berita</h1>
+        <p class="text-xs text-slate-500">Kurasi semi-otomatis berita media nasional & draf AI</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Cloudflare Active
+        </span>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-red">Agregator Berita Nasional Semi-Otomatis</span>
+          <h2 class="font-serif text-2xl font-black text-brand-navy">Kotak Masuk Berita & Kurasi AI</h2>
+          <p class="text-xs text-slate-500 mt-1">Mengambil feed real-time dari Antara, CNN, CNBC, Tempo, dan Republika dengan deteksi duplikasi dan draf jurnalisme AI 1.200 kata.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="alert('Sinkronisasi berita nasional berjalan secara berkala setiap jam melalui pipeline atau CLI: npm run news:sync')" class="px-4 py-2 bg-brand-red hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-2 shadow-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <span>Tarik Berita Nasional</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Total Berita Terkumpul</div>
+          <div class="text-2xl font-black text-brand-navy">50</div>
+          <div class="text-[11px] text-slate-400 mt-1">15 Media Nasional</div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Draf AI Siap Terbit</div>
+          <div class="text-2xl font-black text-purple-700">50</div>
+          <div class="text-[11px] text-purple-600/80 mt-1">Standar 1.200 Kata & Foto</div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Topik Sensitif</div>
+          <div class="text-2xl font-black text-amber-600">18</div>
+          <div class="text-[11px] text-amber-600/80 mt-1">Verifikasi Khusus Redaktur</div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Duplikasi Tersaring</div>
+          <div class="text-2xl font-black text-rose-600">4</div>
+          <div class="text-[11px] text-slate-400 mt-1">Skor Kemiripan &gt; 70%</div>
+        </div>
+      </div>
+
+      <!-- Table of Ingested Items -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+          <h3 class="font-serif font-bold text-sm text-brand-navy">Antrean Berita Masuk dari Media Nasional</h3>
+          <span class="text-xs text-slate-400">Menampilkan 50 draf berita terkini</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+                <th class="p-3">Judul Berita & Sumber Primer</th>
+                <th class="p-3">Kanal</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Waktu Masuk</th>
+                <th class="p-3 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Abubakar Abdullah Kaya Gagasan, Pendidikan Maluku Utara Menanti Bukti Nyata</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2121335/abubakar-abdullah-kaya-gagasan-pendidikan-maluku-utara-menanti-bukti-nyata" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Abubakar Abdullah Kaya Gagasan, Pendidikan Maluku Utara Menanti Bukti Nyata\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Bank Jatim Resmikan Kantor Cabang Balikpapan</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2121339/bank-jatim-resmikan-kantor-cabang-balikpapan" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Bank Jatim Resmikan Kantor Cabang Balikpapan\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">BNI Hadirkan Pengalaman Istimewa bagi Nasabah di MotoGP Mandalika 2026</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2121356/bni-hadirkan-pengalaman-istimewa-bagi-nasabah-di-motogp-mandalika-2026" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: BNI Hadirkan Pengalaman Istimewa bagi Nasabah di MotoGP Mandalika 2026\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">BNI dan PBSI Dorong Lahirnya Juara Baru Bulu Tangkis Indonesia</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2121365/bni-dan-pbsi-dorong-lahirnya-juara-baru-bulu-tangkis-indonesia" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: BNI dan PBSI Dorong Lahirnya Juara Baru Bulu Tangkis Indonesia\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Satgas PRR Bikin Sumur Bor untuk Warga Terdampak Banjir Aceh Utara</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2121699/satgas-prr-bikin-sumur-bor-untuk-warga-terdampak-banjir-aceh-utara" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Satgas PRR Bikin Sumur Bor untuk Warga Terdampak Banjir Aceh Utara\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Ahmad Luthfi Targetkan Investasi Jawa Tengah Capai Rp 110 Triliun pada Akhir 2026</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2122312/ahmad-luthfi-targetkan-investasi-jawa-tengah-capai-rp-110-triliun-pada-akhir-2026" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Ahmad Luthfi Targetkan Investasi Jawa Tengah Capai Rp 110 Triliun pada Akhir 2026\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Gaya Kepemimpinan Ahmad Luthfi Jadi Sorotan Akademisi</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2122315/gaya-kepemimpinan-ahmad-luthfi-jadi-sorotan-akademisi" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Gaya Kepemimpinan Ahmad Luthfi Jadi Sorotan Akademisi\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">DPRD Kota Bandung Perkuat Regulasi Pengelolaan Barang Milik Daerah</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2122311/dprd-kota-bandung-perkuat-regulasi-pengelolaan-barang-milik-daerah" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: DPRD Kota Bandung Perkuat Regulasi Pengelolaan Barang Milik Daerah\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Ahmad Luthfi Dorong Percepatan Rehabilitasi Usai Karhutla Gunung Sumbing Padam</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2122317/ahmad-luthfi-dorong-percepatan-rehabilitasi-usai-karhutla-gunung-sumbing-padam" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Ahmad Luthfi Dorong Percepatan Rehabilitasi Usai Karhutla Gunung Sumbing Padam\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Konsep Glow in the Dark Warnai Pagelaran Gandrung Sewu 2026</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Nasional</span>
+                            <span>•</span>
+                            <a href="https://nasional.tempo.co/read/2122322/konsep-glow-in-the-dark-warnai-pagelaran-gandrung-sewu-2026" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Konsep Glow in the Dark Warnai Pagelaran Gandrung Sewu 2026\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">PT Pertamina Patra Niaga RU Cilacap Buka Tender Penggantian Column Assy 11C-1</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2117231/pt-pertamina-patra-niaga-ru-cilacap-buka-tender-penggantian-column-assy-11c-1" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: PT Pertamina Patra Niaga RU Cilacap Buka Tender Penggantian Column Assy 11C-1\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">BNI wondrX 2026 Hadirkan Zona Travel sebagai Solusi Kebutuhan Perjalanan</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2118061/bni-wondrx-2026-hadirkan-zona-travel-sebagai-solusi-kebutuhan-perjalanan" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: BNI wondrX 2026 Hadirkan Zona Travel sebagai Solusi Kebutuhan Perjalanan\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">KRL hingga Shuttle Bus Gratis, Pilihan Transportasi Menuju BNI wondrX 2026</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2118074/krl-hingga-shuttle-bus-gratis-pilihan-transportasi-menuju-bni-wondrx-2026" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: KRL hingga Shuttle Bus Gratis, Pilihan Transportasi Menuju BNI wondrX 2026\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">BNI Hadirkan Deretan Musikus Tanah Air di wondrX 2026</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2118083/bni-hadirkan-deretan-musikus-tanah-air-di-wondrx-2026" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: BNI Hadirkan Deretan Musikus Tanah Air di wondrX 2026\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Jelang Danantara Housing Expo, BNI Hadirkan Area Properti di wondrX 2026</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2118093/jelang-danantara-housing-expo-bni-hadirkan-area-properti-di-wondrx-2026" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Jelang Danantara Housing Expo, BNI Hadirkan Area Properti di wondrX 2026\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">PT Pertamina Patra Niaga RU Cilacap Buka Tender Penggantian Column Assy 11C-1</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2117248/pt-pertamina-patra-niaga-ru-cilacap-buka-tender-penggantian-column-assy-11c-1" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: PT Pertamina Patra Niaga RU Cilacap Buka Tender Penggantian Column Assy 11C-1\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Arfadia Taruh Tiga Laporan Risetnya di Zenodo</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2119053/arfadia-taruh-tiga-laporan-risetnya-di-zenodo" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Arfadia Taruh Tiga Laporan Risetnya di Zenodo\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Pegadaian Apresiasi Nasabah di Hari Pelanggan Nasional</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2119068/pegadaian-apresiasi-nasabah-di-hari-pelanggan-nasional" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Pegadaian Apresiasi Nasabah di Hari Pelanggan Nasional\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Perkuat Ekosistem Pesisir, KKP Bersama Pemerintah Kota Padang Tanam 1.000 Bibit Mangrove</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2119548/perkuat-ekosistem-pesisir-kkp-bersama-pemerintah-kota-padang-tanam-1-000-bibit-mangrove" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Perkuat Ekosistem Pesisir, KKP Bersama Pemerintah Kota Padang Tanam 1.000 Bibit Mangrove\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Soroti Gangguan Operasional di Stasiun Bogor, Komisi V DPR RI Minta Pemerintah Proaktif Perbarui Informasi ke Masyarakat</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Tempo - Bisnis</span>
+                            <span>•</span>
+                            <a href="https://bisnis.tempo.co/read/2119557/soroti-gangguan-operasional-di-stasiun-bogor-komisi-v-dpr-ri-minta-pemerintah-proaktif-perbarui-informasi-ke-masyarakat" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Soroti Gangguan Operasional di Stasiun Bogor, Komisi V DPR RI Minta Pemerintah Proaktif Perbarui Informasi ke Masyarakat\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/074381000-1793351082-830-556.jpg" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Sangu Sampah, dari Sampah Plastik Jadi Uang Saku</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://visual.republika.co.id/berita/tnprz9375/sangu-sampah-dari-sampah-plastik-jadi-uang-saku" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Inpicture
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Sangu Sampah, dari Sampah Plastik Jadi Uang Saku\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/_261030173312-230.png" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">BSI Apresiasi Kinerja Agen yang Perluas Akses Keuangan</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://halalhub.republika.co.id/berita/tnpule416/bsi-apresiasi-kinerja-agen-yang-perluas-akses-keuangan" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Keuangan Sharia
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: BSI Apresiasi Kinerja Agen yang Perluas Akses Keuangan\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/_261030172242-777.png" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Dian Sastrowardoyo Hidupkan Karakter Perempuan Pendobrak Tradisi di Film Terbaru</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://ameera.republika.co.id/berita/tnpuqi425/dian-sastrowardoyo-hidupkan-karakter-perempuan-pendobrak-tradisi-di-film-terbaru" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Happening
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Dian Sastrowardoyo Hidupkan Karakter Perempuan Pendobrak Tradisi di Film Terbaru\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/kapolda-jawa-tengah-jateng-irjen-pol-roy-hardi-siahaan_261030173653-213.jpeg" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Dua Ponpes Digeledah Buntut Pembakaran Warung Mi Babi Sukoharjo, Eks Napi Diburu</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://news.republika.co.id/berita/tnputt377/dua-ponpes-digeledah-buntut-pembakaran-warung-mi-babi-sukoharjo-eks-napi-diburu" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional News
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Dua Ponpes Digeledah Buntut Pembakaran Warung Mi Babi Sukoharjo, Eks Napi Diburu\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/_261030173240-545.png" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Generasi Prima Luncurkan Kampanye Bersihkan Pantai Ancol</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://news.republika.co.id/berita/tnpuyn484/generasi-prima-luncurkan-kampanye-bersihkan-pantai-ancol" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Nasional News
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Generasi Prima Luncurkan Kampanye Bersihkan Pantai Ancol\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/_261030174653-319.png" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Laba Kotor TBS Energi Utama Melonjak 105 Persen hingga September 2026</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://ekonomi.republika.co.id/berita/tnpvas370/laba-kotor-tbs-energi-utama-melonjak-105-persen-hingga-september-2026" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Laba Kotor TBS Energi Utama Melonjak 105 Persen hingga September 2026\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/presiden-iran-mahsoud-pezeshkian-kanan-menjadi-tuan-rumah-pertemuan_261027131409-726.jpg" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Proposal Perdamaian Sebelumnya Ditolak Iran, Mediator Qatar Hari Ini Kembali ke di Teheran</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://news.republika.co.id/berita/tnpvcp409/proposal-perdamaian-sebelumnya-ditolak-iran-mediator-qatar-hari-ini-kembali-ke-di-teheran" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Internasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Proposal Perdamaian Sebelumnya Ditolak Iran, Mediator Qatar Hari Ini Kembali ke di Teheran\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/005221500-1774256454-830-556.jpg" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Tren Berhemat Ubah Pola Belanja Wisatawan</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://ekonomi.republika.co.id/berita/tnpvgh423/tren-berhemat-ubah-pola-belanja-wisatawan" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Finansial
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Tren Berhemat Ubah Pola Belanja Wisatawan\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/006494400-1769533459-830-556.jpg" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">ASDP Gratiskan Tarif Jasa Kepelabuhanan pada Nataru 2026-2027</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://ekonomi.republika.co.id/berita/tnpvc7484/asdp-gratiskan-tarif-jasa-kepelabuhanan-pada-nataru-20262027" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Bisnis
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: ASDP Gratiskan Tarif Jasa Kepelabuhanan pada Nataru 2026-2027\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        <div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="https://static.republika.co.id/uploads/images/detailnews/047003500-1718795766-830-556.jpg" class="w-full h-full object-cover"></div>
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">Disaksikan Kim Jong Un, Drone Korea Utara Serang Replika Tank AS</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">Republika - Terkini</span>
+                            <span>•</span>
+                            <a href="https://news.republika.co.id/berita/tnpvl1451/disaksikan-kim-jong-un-drone-korea-utara-serang-replika-tank-as" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        Internasional
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+                        Draf Siap
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      30 Okt, 17.53
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: Disaksikan Kim Jong Un, Drone Korea Utara Serang Replika Tank AS\n\nStatus: DRAFT_GENERATED\n\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ⚡ Terbitkan
+                      </button>
+                    </td>
+                  </tr>
+                
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  
+    </main>
+  </div>
+
+  <script>
+    // Hydrate User Data from LocalStorage
+    try {
+      const u = JSON.parse(localStorage.getItem('cn_user') || '{}');
+      if (u.name) {
+        document.getElementById('userNameDisplay').textContent = u.name;
+        document.getElementById('userRoleDisplay').textContent = u.role || 'SUPER_ADMIN';
+        const initials = u.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('userAvatar').textContent = initials || 'RN';
+      }
+    } catch(e) {}
+
+    function handleLogout() {
+      localStorage.removeItem('cn_user');
+      document.cookie = 'cn_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      window.location.replace('/admin/login');
+    }
+  </script>
+</body>
+</html>

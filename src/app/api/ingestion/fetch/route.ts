@@ -2,9 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { canPublish } from "@/lib/rbac";
-import { db } from "@/lib/db";
-import { ingestFromRssSource } from "@/lib/news-pipeline";
-import { logAuditEvent } from "@/lib/audit";
+import { executeAllSourcesIngestion } from "@/lib/ingestion-service";
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -13,28 +11,19 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const sources = await db.ingestionSource.findMany({
-      where: { isActive: true },
-    });
-
-    const results = [];
-    for (const source of sources) {
-      const res = await ingestFromRssSource(source.id);
-      results.push(res);
-    }
-
-    await logAuditEvent({
+    const results = await executeAllSourcesIngestion({
       userId: user.id,
-      action: "NEWS_INGESTION_RUN",
-      entityType: "IngestionSource",
-      details: results,
-      ipAddress: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip"),
+      maxItemsPerSource: 10,
+      autoDraft: true,
     });
 
-    return NextResponse.json({ success: true, results });
+    return NextResponse.json({
+      success: true,
+      message: `Berhasil memproses ${results.totalSources} sumber media nasional.`,
+      ...results,
+    });
   } catch (err: any) {
     console.error("Ingestion fetch error:", err);
     return NextResponse.json({ error: err.message || "Gagal mengambil data dari feed." }, { status: 500 });
   }
 }
-

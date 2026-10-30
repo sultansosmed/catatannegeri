@@ -143,9 +143,14 @@ export function NewsReviewStudio({
   const [metaDescription, setMetaDescription] = useState(item.aiMetaDescription || item.aiDraftSummary || "");
   const [editorialNotes, setEditorialNotes] = useState(item.editorialNotes || "");
   const initialCatVisual = getCategoryVisual(initialCat?.slug);
-  const [featuredImage, setFeaturedImage] = useState(initialCatVisual.image);
+  const initialImage = qualityAudit?.extractedImageUrl || initialCatVisual.image;
+  const [featuredImage, setFeaturedImage] = useState(initialImage);
   const [imageAlt, setImageAlt] = useState(initialCatVisual.alt);
-  const [imageCaption, setImageCaption] = useState(initialCatVisual.caption);
+  const [imageCaption, setImageCaption] = useState(
+    qualityAudit?.extractedImageUrl
+      ? `Dokumentasi siaran liputan resmi ${item.source.name}`
+      : initialCatVisual.caption
+  );
   const [imageCredit, setImageCredit] = useState(item.source.name || "Redaksi Catatan Negeri");
 
   // Pre-publication Checklist States
@@ -742,7 +747,14 @@ export function NewsReviewStudio({
             {/* Gambar Utama Tematik */}
             <div className="space-y-2.5 p-3 rounded-lg border border-slate-200 bg-slate-50">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700">Foto Utama Berita</label>
+                <div className="flex items-center gap-1.5">
+                  <label className="text-xs font-bold text-slate-700">Foto Utama Berita</label>
+                  {qualityAudit?.extractedImageUrl && (
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">
+                      Foto Media Asli
+                    </span>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() => {

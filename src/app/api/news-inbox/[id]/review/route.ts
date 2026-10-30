@@ -7,7 +7,35 @@ import { generateSlug } from "@/lib/slug";
 import { calculateReadingTime, SITE_URL } from "@/lib/seo";
 import { logAuditEvent } from "@/lib/audit";
 import { notifySearchEnginesOfNewArticle } from "@/lib/indexing-service";
+import { getCategoryVisual } from "@/lib/category-images";
 import { ArticleStatus } from "@prisma/client";
+import fs from "fs";
+import path from "path";
+
+function syncArticleToPortalData(article: any) {
+  try {
+    const portalDataPath = path.join(process.cwd(), "src", "data", "portal-data.json");
+    if (fs.existsSync(portalDataPath)) {
+      const data = JSON.parse(fs.readFileSync(portalDataPath, "utf8"));
+      if (Array.isArray(data.articles)) {
+        const idx = data.articles.findIndex((a: any) => a.id === article.id || a.slug === article.slug);
+        const articleJson = {
+          ...article,
+          category: article.category ? { id: article.category.id, name: article.category.name, slug: article.category.slug } : undefined,
+          author: article.author ? { id: article.author.id, displayName: article.author.displayName } : undefined,
+        };
+        if (idx >= 0) {
+          data.articles[idx] = { ...data.articles[idx], ...articleJson };
+        } else {
+          data.articles.unshift(articleJson);
+        }
+        fs.writeFileSync(portalDataPath, JSON.stringify(data, null, 2), "utf8");
+      }
+    }
+  } catch (err) {
+    console.warn("Could not sync article to portal-data.json:", err);
+  }
+}
 
 export async function POST(
   req: NextRequest,
@@ -29,9 +57,9 @@ export async function POST(
   }
 
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const {
-      action, // "APPROVE_AND_PUBLISH" | "APPROVE_AS_DRAFT" | "RESEARCH_NEEDED" | "REJECT"
+      action = "APPROVE_AND_PUBLISH", // Default to publish if called via quick-publish
       editorialNotes,
       title,
       summary,
@@ -101,6 +129,21 @@ export async function POST(
         targetAuthorId = user.authorProfile?.id || (await db.authorProfile.findFirst())?.id;
       }
 
+      // Determine featured image
+      let finalFeaturedImage = featuredImage;
+      if (!finalFeaturedImage && item.aiQualityAudit) {
+        try {
+          const audit = JSON.parse(item.aiQualityAudit);
+          if (audit.extractedImageUrl) {
+            finalFeaturedImage = audit.extractedImageUrl;
+          }
+        } catch {}
+      }
+      if (!finalFeaturedImage) {
+        const visual = getCategoryVisual(item.detectedCategory || "nasional");
+        finalFeaturedImage = visual.image;
+      }
+
       // Generate unique slug
       let baseSlug = generateSlug(finalTitle);
       if (!baseSlug) baseSlug = `berita-${Date.now()}`;
@@ -128,7 +171,7 @@ export async function POST(
         ? `Laporan melalui verifikasi ketat redaksi khusus topik berdampak tinggi. Sumber primer: ${item.source.name}.`
         : `Diverifikasi berdasarkan siaran pers resmi ${item.source.name}.`;
 
-      // Create Article in transaction
+      // Create Article in database
       const article = await db.article.create({
         data: {
           title: finalTitle,
@@ -137,7 +180,7 @@ export async function POST(
           content: finalContent,
           categoryId: targetCategoryId!,
           authorId: targetAuthorId!,
-          featuredImage: featuredImage || null,
+          featuredImage: finalFeaturedImage,
           imageAlt: imageAlt || finalTitle,
           imageCaption: imageCaption || `Ilustrasi siaran berita ${item.source.name}`,
           imageCredit: imageCredit || item.source.name,
@@ -154,7 +197,13 @@ export async function POST(
       });
 
       // Connect tags if any
-      const tagList = Array.isArray(tags) ? tags : [];
+      let tagList = Array.isArray(tags) ? tags : [];
+      if (tagList.length === 0 && item.aiRecommendedTags) {
+        try {
+          tagList = JSON.parse(item.aiRecommendedTags);
+        } catch {}
+      }
+
       for (const tName of tagList) {
         if (!tName) continue;
         const tagSlug = generateSlug(tName);
@@ -197,6 +246,9 @@ export async function POST(
         },
       });
 
+      // Sync to fallback portal data JSON for edge/static mirrors
+      syncArticleToPortalData(article);
+
       await logAuditEvent({
         userId: user.id,
         action: isPublish ? "INBOX_ARTICLE_PUBLISHED" : "INBOX_ARTICLE_APPROVED_AS_DRAFT",
@@ -230,7 +282,6 @@ export async function POST(
     return NextResponse.json({ error: err.message || "Gagal memproses telaah." }, { status: 500 });
   }
 }
-
 
 export async function generateStaticParams() {
   return [];

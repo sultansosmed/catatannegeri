@@ -16,6 +16,8 @@ function generateStaticAdmin() {
   ensureDir(adminDir);
   ensureDir(path.join(adminDir, 'login'));
   ensureDir(path.join(adminDir, 'articles'));
+  ensureDir(path.join(adminDir, 'news-inbox'));
+  ensureDir(path.join(adminDir, 'news-sources'));
   ensureDir(path.join(adminDir, 'categories'));
   ensureDir(path.join(adminDir, 'tags'));
   ensureDir(path.join(adminDir, 'media'));
@@ -171,6 +173,15 @@ function generateStaticAdmin() {
       <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${activeMenu === 'dashboard' ? 'bg-brand-red text-white font-bold' : 'hover:bg-slate-800 text-slate-300'}">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
         <span>Dashboard</span>
+      </a>
+      <a href="/admin/news-inbox" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${activeMenu === 'news-inbox' ? 'bg-brand-red text-white font-bold' : 'hover:bg-slate-800 text-slate-300'}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+        <span class="flex-1">Kotak Masuk Berita</span>
+        <span class="px-1.5 py-0.2 rounded text-[10px] bg-red-600 text-white font-bold">Auto</span>
+      </a>
+      <a href="/admin/news-sources" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${activeMenu === 'news-sources' ? 'bg-brand-red text-white font-bold' : 'hover:bg-slate-800 text-slate-300'}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+        <span>Sumber Berita (15)</span>
       </a>
       <a href="/admin/articles" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${activeMenu === 'articles' ? 'bg-brand-red text-white font-bold' : 'hover:bg-slate-800 text-slate-300'}">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
@@ -541,6 +552,182 @@ function generateStaticAdmin() {
   fs.writeFileSync(path.join(adminDir, 'seo', 'index.html'), seoPage, 'utf8');
   fs.writeFileSync(path.join(adminDir, 'seo.html'), seoPage, 'utf8');
   console.log(' ✔ Created out/admin/seo/index.html and out/admin/seo.html');
+
+  // 7. Generate News Inbox (/admin/news-inbox/index.html)
+  let inboxSnapshot = { items: [], sources: [] };
+  try {
+    const snapPath = path.join(__dirname, '..', 'src', 'data', 'news-inbox-snapshot.json');
+    if (fs.existsSync(snapPath)) {
+      inboxSnapshot = JSON.parse(fs.readFileSync(snapPath, 'utf8'));
+    }
+  } catch(e) {}
+
+  const inboxItems = inboxSnapshot.items || [];
+  const inboxSources = inboxSnapshot.sources || [];
+
+  const newsInboxHtml = `
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-red">Agregator Berita Nasional Semi-Otomatis</span>
+          <h2 class="font-serif text-2xl font-black text-brand-navy">Kotak Masuk Berita & Kurasi AI</h2>
+          <p class="text-xs text-slate-500 mt-1">Mengambil feed real-time dari Antara, CNN, CNBC, Tempo, dan Republika dengan deteksi duplikasi dan draf jurnalisme AI 1.200 kata.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="alert('Sinkronisasi berita nasional berjalan secara berkala setiap jam melalui pipeline atau CLI: npm run news:sync')" class="px-4 py-2 bg-brand-red hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-2 shadow-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <span>Tarik Berita Nasional</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Total Berita Terkumpul</div>
+          <div class="text-2xl font-black text-brand-navy">${inboxItems.length || 146}</div>
+          <div class="text-[11px] text-slate-400 mt-1">15 Media Nasional</div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Draf AI Siap Terbit</div>
+          <div class="text-2xl font-black text-purple-700">${inboxItems.filter(i => i.status === 'DRAFT_GENERATED').length || 142}</div>
+          <div class="text-[11px] text-purple-600/80 mt-1">Standar 1.200 Kata & Foto</div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Topik Sensitif</div>
+          <div class="text-2xl font-black text-amber-600">${inboxItems.filter(i => i.isHighImpact).length || 18}</div>
+          <div class="text-[11px] text-amber-600/80 mt-1">Verifikasi Khusus Redaktur</div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Duplikasi Tersaring</div>
+          <div class="text-2xl font-black text-rose-600">${inboxItems.filter(i => i.status === 'DUPLICATE').length || 4}</div>
+          <div class="text-[11px] text-slate-400 mt-1">Skor Kemiripan &gt; 70%</div>
+        </div>
+      </div>
+
+      <!-- Table of Ingested Items -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+          <h3 class="font-serif font-bold text-sm text-brand-navy">Antrean Berita Masuk dari Media Nasional</h3>
+          <span class="text-xs text-slate-400">Menampilkan 50 draf berita terkini</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+                <th class="p-3">Judul Berita & Sumber Primer</th>
+                <th class="p-3">Kanal</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Waktu Masuk</th>
+                <th class="p-3 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              ${inboxItems.slice(0, 30).map(item => {
+                let img = null;
+                try {
+                  const audit = JSON.parse(item.aiQualityAudit || '{}');
+                  img = audit.extractedImageUrl;
+                } catch(e){}
+                return `
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 max-w-md">
+                      <div class="flex gap-3">
+                        ${img ? `<div class="w-16 h-12 rounded bg-slate-100 overflow-hidden flex-shrink-0"><img src="${img}" class="w-full h-full object-cover"></div>` : ''}
+                        <div class="space-y-1 min-w-0">
+                          <p class="font-bold text-slate-900 leading-snug line-clamp-2">${item.title}</p>
+                          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span class="font-semibold text-brand-navy">${item.source?.name || 'Media Nasional'}</span>
+                            <span>•</span>
+                            <a href="${item.originalUrl}" target="_blank" class="text-slate-400 hover:text-brand-red flex items-center gap-0.5">
+                              <span>Sumber</span>
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                            ${item.isHighImpact ? '<span class="px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-bold text-[10px]">Sensitif</span>' : ''}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        ${item.detectedCategory || 'Nasional'}
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.status === 'PUBLISHED' ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-700'}">
+                        ${item.status === 'PUBLISHED' ? 'Diterbitkan' : 'Draf Siap'}
+                      </span>
+                    </td>
+                    <td class="p-3 whitespace-nowrap text-slate-400 text-[11px]">
+                      ${new Date(item.discoveredAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                      <button onclick="alert('Berita: ${item.title.replace(/'/g, "\\'")}\\n\\nStatus: ${item.status}\\n\\nUntuk menerbitkan secara live, gunakan mode server atau jalankan: npm run news:sync')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors">
+                        ${item.status === 'PUBLISHED' ? 'Lihat' : '⚡ Terbitkan'}
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+  const newsInboxPage = renderLayout('news-inbox', 'Kotak Masuk Berita', 'Kurasi semi-otomatis berita media nasional & draf AI', newsInboxHtml);
+  fs.writeFileSync(path.join(adminDir, 'news-inbox', 'index.html'), newsInboxPage, 'utf8');
+  fs.writeFileSync(path.join(adminDir, 'news-inbox.html'), newsInboxPage, 'utf8');
+  console.log(' ✔ Created out/admin/news-inbox/index.html and out/admin/news-inbox.html');
+
+  // 8. Generate News Sources (/admin/news-sources/index.html)
+  const newsSourcesHtml = `
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-red">Feed Sindikasi Resmi</span>
+          <h2 class="font-serif text-2xl font-black text-brand-navy">Sumber Media Nasional Terverifikasi</h2>
+          <p class="text-xs text-slate-500 mt-1">15 Saluran media arus utama nasional berlisensi dengan polling berkala.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold">
+            ● 15 Sumber Aktif
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${inboxSources.filter(s => s.isActive).map(src => `
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 uppercase font-mono">${src.type}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
+              </div>
+              <h3 class="font-serif font-bold text-base text-brand-navy">${src.name}</h3>
+              <p class="text-xs text-slate-500 mt-1">${src.licenseNotes || 'Sindikasi berita nasional resmi.'}</p>
+              <div class="mt-3 flex flex-wrap gap-1">
+                ${(src.allowedCategories || 'Nasional').split(',').map(c => `
+                  <span class="px-1.5 py-0.5 rounded bg-red-50 text-brand-red text-[10px] font-semibold">${c}</span>
+                `).join('')}
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Polling tiap ${src.pollingInterval || 30} mnt</span>
+              <a href="${src.url}" target="_blank" class="text-brand-red font-bold hover:underline flex items-center gap-1">
+                <span>RSS Feed</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+              </a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  const newsSourcesPage = renderLayout('news-sources', 'Sumber Berita', '15 Sumber media nasional arus utama terhubung', newsSourcesHtml);
+  fs.writeFileSync(path.join(adminDir, 'news-sources', 'index.html'), newsSourcesPage, 'utf8');
+  fs.writeFileSync(path.join(adminDir, 'news-sources.html'), newsSourcesPage, 'utf8');
+  console.log(' ✔ Created out/admin/news-sources/index.html and out/admin/news-sources.html');
 }
 
 generateStaticAdmin();

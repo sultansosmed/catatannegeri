@@ -3,6 +3,7 @@ const path = require('path');
 const portalData = require('../src/data/portal-data.json');
 
 const outDir = path.join(__dirname, '..', 'out');
+const publicDir = path.join(__dirname, '..', 'public');
 const SITE_URL = 'https://catatannegeri.com';
 
 // 1. Remove conflicting directories if they exist
@@ -33,7 +34,8 @@ for (const art of portalData.articles) {
 }
 sitemap += `</urlset>`;
 fs.writeFileSync(path.join(outDir, 'sitemap.xml'), sitemap);
-console.log('✔ Generated out/sitemap.xml');
+fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
+console.log('✔ Generated out/sitemap.xml and public/sitemap.xml');
 
 // 3. Generate news-sitemap.xml
 let newsSitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">\n`;
@@ -44,7 +46,8 @@ for (const art of portalData.articles.slice(0, 20)) {
 }
 newsSitemap += `</urlset>`;
 fs.writeFileSync(path.join(outDir, 'news-sitemap.xml'), newsSitemap);
-console.log('✔ Generated out/news-sitemap.xml');
+fs.writeFileSync(path.join(publicDir, 'news-sitemap.xml'), newsSitemap);
+console.log('✔ Generated out/news-sitemap.xml and public/news-sitemap.xml');
 
 // 4. Generate rss.xml
 let rss = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n  <title>Catatan Negeri</title>\n  <link>${SITE_URL}</link>\n  <description>Portal Berita &amp; Informasi Digital Terpercaya Indonesia</description>\n  <language>id</language>\n`;
@@ -55,12 +58,14 @@ for (const art of portalData.articles.slice(0, 20)) {
 }
 rss += `</channel>\n</rss>`;
 fs.writeFileSync(path.join(outDir, 'rss.xml'), rss);
-console.log('✔ Generated out/rss.xml');
+fs.writeFileSync(path.join(publicDir, 'rss.xml'), rss);
+console.log('✔ Generated out/rss.xml and public/rss.xml');
 
 // 5. Generate robots.txt
 const robots = `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\nSitemap: ${SITE_URL}/news-sitemap.xml\nHost: ${SITE_URL}\n`;
 fs.writeFileSync(path.join(outDir, 'robots.txt'), robots);
-console.log('✔ Generated out/robots.txt');
+fs.writeFileSync(path.join(publicDir, 'robots.txt'), robots);
+console.log('✔ Generated out/robots.txt and public/robots.txt');
 
 // 6. Ensure Clean Category Routing for Static Hosting (both /kategori.html and /kategori/index.html)
 for (const cat of portalData.categories) {

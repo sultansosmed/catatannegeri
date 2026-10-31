@@ -58,6 +58,9 @@ export const metadata: Metadata = {
     shortcut: "/brand/logo.png",
     apple: "/brand/logo.png",
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+  },
 };
 
 export default function RootLayout({

@@ -7,7 +7,7 @@ const publicDir = path.join(__dirname, '..', 'public');
 const SITE_URL = 'https://catatannegeri.com';
 
 // 1. Remove conflicting directories if they exist
-['sitemap.xml', 'news-sitemap.xml', 'robots.txt', 'rss.xml', '(public)', 'api'].forEach((item) => {
+['sitemap.xml', 'sitemap_index.xml', 'news-sitemap.xml', 'robots.txt', 'rss.xml', '(public)', 'api'].forEach((item) => {
   const p = path.join(outDir, item);
   if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
     fs.rmSync(p, { recursive: true, force: true });
@@ -37,6 +37,16 @@ fs.writeFileSync(path.join(outDir, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
 console.log('✔ Generated out/sitemap.xml and public/sitemap.xml');
 
+// 2b. Generate sitemap_index.xml (Master Index for Google Search Console)
+const nowIso = new Date().toISOString();
+let sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+sitemapIndex += `  <sitemap>\n    <loc>${SITE_URL}/sitemap.xml</loc>\n    <lastmod>${nowIso}</lastmod>\n  </sitemap>\n`;
+sitemapIndex += `  <sitemap>\n    <loc>${SITE_URL}/news-sitemap.xml</loc>\n    <lastmod>${nowIso}</lastmod>\n  </sitemap>\n`;
+sitemapIndex += `</sitemapindex>`;
+fs.writeFileSync(path.join(outDir, 'sitemap_index.xml'), sitemapIndex);
+fs.writeFileSync(path.join(publicDir, 'sitemap_index.xml'), sitemapIndex);
+console.log('✔ Generated out/sitemap_index.xml and public/sitemap_index.xml');
+
 // 3. Generate news-sitemap.xml
 let newsSitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">\n`;
 for (const art of portalData.articles.slice(0, 20)) {
@@ -62,7 +72,7 @@ fs.writeFileSync(path.join(publicDir, 'rss.xml'), rss);
 console.log('✔ Generated out/rss.xml and public/rss.xml');
 
 // 5. Generate robots.txt
-const robots = `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\nSitemap: ${SITE_URL}/news-sitemap.xml\nHost: ${SITE_URL}\n`;
+const robots = `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap_index.xml\nSitemap: ${SITE_URL}/sitemap.xml\nSitemap: ${SITE_URL}/news-sitemap.xml\nHost: ${SITE_URL}\n`;
 fs.writeFileSync(path.join(outDir, 'robots.txt'), robots);
 fs.writeFileSync(path.join(publicDir, 'robots.txt'), robots);
 console.log('✔ Generated out/robots.txt and public/robots.txt');

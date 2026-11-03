@@ -3,6 +3,7 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
+Sitemap: https://catatannegeri.com/sitemap_index.xml
 Sitemap: https://catatannegeri.com/sitemap.xml
 Sitemap: https://catatannegeri.com/news-sitemap.xml
 Host: https://catatannegeri.com

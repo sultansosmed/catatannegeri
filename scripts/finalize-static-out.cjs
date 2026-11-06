@@ -77,6 +77,25 @@ fs.writeFileSync(path.join(outDir, 'robots.txt'), robots);
 fs.writeFileSync(path.join(publicDir, 'robots.txt'), robots);
 console.log('✔ Generated out/robots.txt and public/robots.txt');
 
+// 5b. Generate ads.txt for Google AdSense
+const ADSENSE_PUB_ID = 'pub-4265487663797458';
+const adsTxtContent = `google.com, ${ADSENSE_PUB_ID}, DIRECT, f08c47fec0942fa0\n`;
+fs.writeFileSync(path.join(outDir, 'ads.txt'), adsTxtContent);
+fs.writeFileSync(path.join(publicDir, 'ads.txt'), adsTxtContent);
+console.log('✔ Generated out/ads.txt and public/ads.txt');
+
+// 5c. Inject Google AdSense script and meta verification tag into pre-rendered HTML files
+const adsenseScriptTag = `<meta name="google-adsense-account" content="ca-${ADSENSE_PUB_ID}"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${ADSENSE_PUB_ID}" crossorigin="anonymous"></script>`;
+function injectAdsense(filePath) {
+  if (!fs.existsSync(filePath)) return;
+  let html = fs.readFileSync(filePath, 'utf8');
+  if (!html.includes(`ca-${ADSENSE_PUB_ID}`)) {
+    html = html.replace('</head>', `${adsenseScriptTag}</head>`);
+    fs.writeFileSync(filePath, html, 'utf8');
+  }
+}
+injectAdsense(path.join(outDir, 'index.html'));
+
 // 6. Ensure Clean Category Routing for Static Hosting (both /kategori.html and /kategori/index.html)
 for (const cat of portalData.categories) {
   const catHtml = path.join(outDir, `${cat.slug}.html`);
